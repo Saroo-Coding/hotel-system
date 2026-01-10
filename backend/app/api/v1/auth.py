@@ -7,7 +7,7 @@ from app.core.database import SessionLocal
 from app.core.security import verify_password, create_access_token, hash_password
 from app.core.config import settings
 from app.schemas.auth_schemas import AdminCreateUser, UserRegister
-from app.api.deps import require_role, get_current_user
+from app.api.deps import get_current_user, check_roles
 from app.models.users import User
 from app.models.refresh_tokens import RefreshToken
 
@@ -26,7 +26,7 @@ def get_db():
 def register_user(
     payload: AdminCreateUser,
     db: Session = Depends(get_db),
-    admin=Depends(require_role("ADMIN"))
+    admin=Depends(check_roles("ADMIN"))
 ):
     if payload.email:
         if db.query(User).filter(User.email == payload.email).first():

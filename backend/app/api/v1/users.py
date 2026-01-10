@@ -2,13 +2,15 @@ from fastapi import APIRouter, Depends, HTTPException
 from app.core.database import SessionLocal
 from sqlalchemy.orm import Session
 from app.models.users import User
-from app.api.deps import get_current_user
+from app.api.deps import check_roles, get_current_user
 
 import logging
 
 router = APIRouter()
 logger = logging.getLogger("UsersRouter")
 
+# db: Session = Depends(get_db) nghĩa là:
+# FastAPI tạo DB session giúp bạn đưa session đó vào biến db và tự đóng nó sau khi request xong.
 def get_db():
     db = SessionLocal()
     try:
@@ -16,13 +18,11 @@ def get_db():
     finally:
         db.close()
 
-# db: Session = Depends(get_db) nghĩa là:
-# FastAPI tạo DB session giúp bạn đưa session đó vào biến db và tự đóng nó sau khi request xong.
 @router.get("/sample")
 def get_sample_user(db: Session = Depends(get_db)):
     try:
         user = db.query(User).where(
-            User.password_hash == '0942809417'
+            User.phone == '0942809417'
         ).first()
 
         if not user:

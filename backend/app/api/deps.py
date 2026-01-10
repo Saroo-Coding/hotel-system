@@ -39,14 +39,14 @@ def get_current_user(
 
     return user
 
-# Dependency để kiểm tra vai trò của user
-def require_role(required_role: str):
-    def role_checker(current_user: User = Depends(get_current_user)):
-        if current_user.role != required_role:
+# Dependency để kiểm tra vai trò của user là Admin, Staff, v.v.
+def check_roles(*roles: str):
+    def checker(current_user: User = Depends(get_current_user)):
+        if current_user.role.value not in roles:
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
-                detail="Insufficient permissions",
+                detail="Permission denied",
             )
         return current_user
+    return checker
 
-    return role_checker
