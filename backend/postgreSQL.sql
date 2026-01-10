@@ -27,7 +27,7 @@ CREATE INDEX idx_guests_email ON guests(email);
 -- table users
 CREATE TYPE user_role AS ENUM (
     'CUSTOMER',
-    'HOTEL_STAFF',
+    'STAFF',
     'ADMIN'
 );
 

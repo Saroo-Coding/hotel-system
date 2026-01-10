@@ -1,10 +1,17 @@
 from datetime import datetime, timedelta
 from jose import jwt, JWTError
 from passlib.context import CryptContext
-
 from app.core.config import settings
 
+import secrets
+import string
+
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
+# Tạo mật khẩu tạm thời
+def generate_temp_password(length=settings.LENGTH_OF_TEMP_PASSWORD):
+    chars = string.ascii_letters + string.digits
+    return "".join(secrets.choice(chars) for _ in range(length))
 
 # Hàm băm mật khẩu và xác minh mật khẩu
 def hash_password(password: str) -> str:

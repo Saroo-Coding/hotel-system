@@ -7,7 +7,7 @@ Base = declarative_base()
 
 class UserRole(enum.Enum):
     CUSTOMER = "CUSTOMER"
-    HOTEL_STAFF = "HOTEL_STAFF"
+    STAFF = "STAFF"
     ADMIN = "ADMIN"
 
 class UserStatus(enum.Enum):

@@ -6,14 +6,16 @@ from datetime import datetime, timedelta
 from app.core.database import SessionLocal
 from app.core.security import verify_password, create_access_token, hash_password
 from app.core.config import settings
-from app.schemas.auth_schemas import AdminCreateUser, UserRegister
-from app.api.deps import get_current_user, check_roles
-from app.models.users import User
+from app.schemas.auth_schemas import RegisterRequest
+from app.api.deps import get_current_user
+from app.models.users import User, UserRole
 from app.models.refresh_tokens import RefreshToken
 
 import uuid
+import logging
 
 router = APIRouter()
+logger = logging.getLogger("AuthRouter")
 
 def get_db():
     db = SessionLocal()
@@ -22,73 +24,48 @@ def get_db():
     finally:
         db.close()
 
-@router.post("/admin_register")
-def register_user(
-    payload: AdminCreateUser,
-    db: Session = Depends(get_db),
-    admin=Depends(check_roles("ADMIN"))
-):
-    if payload.email:
-        if db.query(User).filter(User.email == payload.email).first():
-            raise HTTPException(status_code=400, detail="Email already exists")
-
-    if payload.phone:
-        if db.query(User).filter(User.phone == payload.phone).first():
-            raise HTTPException(status_code=400, detail="Phone already exists")
-
-    user = User(
-        id=uuid.uuid4(),
-        email=payload.email,
-        phone=payload.phone,
-        password_hash=hash_password(payload.password),
-        role=payload.role,
-        created_at=datetime.now(),
-    )
-
-    db.add(user)
-    db.commit()
-    db.refresh(user)
-
-    return {
-        "id": str(user.id),
-        "email": user.email,
-        "phone": user.phone,
-        "role": user.role.value
-    }
-
-@router.post("/customer_register")
-def register_user(
-    payload: UserRegister,
+@router.post("/register")
+def register_customer(
+    payload: RegisterRequest,
     db: Session = Depends(get_db),
 ):
-    if payload.email:
-        if db.query(User).filter(User.email == payload.email).first():
-            raise HTTPException(status_code=400, detail="Email already exists")
+    try:
+        if payload.email:
+            if db.query(User).filter(User.email == payload.email).first():
+                raise HTTPException(status_code=400, detail="Email already exists")
 
-    if payload.phone:
-        if db.query(User).filter(User.phone == payload.phone).first():
-            raise HTTPException(status_code=400, detail="Phone already exists")
+        if payload.phone:
+            if db.query(User).filter(User.phone == payload.phone).first():
+                raise HTTPException(status_code=400, detail="Phone already exists")
 
-    user = User(
-        id=uuid.uuid4(),
-        email=payload.email,
-        phone=payload.phone,
-        password_hash=hash_password(payload.password),
-        role="CUSTOMER",
-        created_at=datetime.now(),
-    )
+        user = User(
+            user = User(
+                email=payload.email,
+                phone=payload.phone,
+                password_hash=hash_password(payload.password),
+                full_name=UserRole.CUSTOMER,
+                role=UserRole.CUSTOMER
+            )
+        )
 
-    db.add(user)
-    db.commit()
-    db.refresh(user)
+        db.add(user)
+        db.commit()
+        db.refresh(user) 
 
-    return {
-        "id": str(user.id),
-        "email": user.email,
-        "phone": user.phone,
-        "role": user.role.value
-    }
+        return {
+            "email": user.email,
+            "phone": user.phone
+        }
+    
+    except Exception as e:
+        db.rollback()
+        logger.exception("Unexpected error in register_customer")
+        raise HTTPException(
+            status_code=500,
+            detail="Internal Server Error"
+        )
 
+# TODO: Thêm try except cho các hàm dưới và log lỗi
 @router.post("/login")
 def login(
     response: Response,
@@ -118,7 +95,6 @@ def login(
     refresh_token_value = str(uuid.uuid4())
 
     refresh_token = RefreshToken(
-        id=uuid.uuid4(),
         user_id=user.id,
         token=refresh_token_value,
         expires_at=datetime.now() + timedelta(days=settings.REFRESH_TOKEN_EXPIRE_DAYS),
@@ -176,7 +152,7 @@ def refresh_token(
 
 @router.post("/logout")
 def logout(
-    current_user: User = Depends(get_current_user),
+    _: User = Depends(get_current_user),
     refresh_token: str | None = Cookie(default=None),
     response: Response = None,
     db: Session = Depends(get_db),
