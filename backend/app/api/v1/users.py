@@ -13,8 +13,6 @@ import logging
 router = APIRouter()
 logger = logging.getLogger("UsersRouter")
 
-# db: Session = Depends(get_db) nghĩa là:
-# FastAPI tạo DB session giúp bạn đưa session đó vào biến db và tự đóng nó sau khi request xong.
 def get_db():
     db = SessionLocal()
     try:
@@ -22,13 +20,13 @@ def get_db():
     finally:
         db.close()
 
-# Get tất cả người dùng (dành cho ADMIN và STAFF)
 # TODO: thêm ?page=1&limit=20&role=CUSTOMER&status=ACTIVE&keyword=nguyen
 @router.get("/users")
 def get_all_users(
     db: Session = Depends(get_db),
     _: User = Depends(check_roles("ADMIN","STAFF"))
 ):
+    ''' Get all users (only ADMIN and STAFF) '''
     try:
         users = db.query(User).all()
         return [
@@ -50,13 +48,13 @@ def get_all_users(
             detail="Internal Server Error"
         )
 
-# Get user by ID (dành cho ADMIN và STAFF)
 @router.get("/users/{user_id}")
 def get_user_by_id(
     user_id: str,
     db: Session = Depends(get_db),
     _: User = Depends(check_roles("ADMIN","STAFF"))
 ):
+    ''' Get user by ID (only ADMIN and STAFF) '''
     try:
         user = db.query(User).filter(User.id == user_id).first()
         if not user:
@@ -76,7 +74,6 @@ def get_user_by_id(
             detail="Internal Server Error"
         )
 
-# Register dùng cho ADMIN tạo STAFF hoặc CUSTOMER mới
 # TODO: gửi email thông báo mật khẩu tạm thời
 @router.post("/admin/users")
 def admin_create_user(
@@ -84,6 +81,7 @@ def admin_create_user(
     db: Session = Depends(get_db),
     _: User = Depends(check_roles(UserRole.ADMIN))
 ):
+    ''' Register new user role STAFF or CUSTOMER (only ADMIN) '''
     try:
         if payload.email:
             if db.query(User).filter(User.email == payload.email).first():
@@ -115,13 +113,13 @@ def admin_create_user(
             detail="Internal Server Error"
         )
 
-# Register dùng cho STAFF tạo khách hàng mới
 @router.post("/staff/customers")
 def staff_create_customer(
     payload: StaffCreateCustomer,
     db: Session = Depends(get_db),
     _: User = Depends(check_roles(UserRole.STAFF))
 ):
+    ''' Register new customer (only STAFF) '''
     try:
         if payload.email:
             if db.query(User).filter(User.email == payload.email).first():

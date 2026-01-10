@@ -8,19 +8,19 @@ from app.models.users import User
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/login")
 
-# Dependency để tạo và đóng DB session
 def get_db():
+    ''' Dependency to get DB session '''
     db = SessionLocal()
     try:
         yield db
     finally:
         db.close()
 
-# Dependency để lấy user hiện tại từ token
 def get_current_user(
     token: str = Depends(oauth2_scheme),
     db: Session = Depends(get_db),
 ) -> User:
+    '''Get current user from payload token'''
     payload = decode_token(token)
 
     if not payload:
@@ -39,8 +39,8 @@ def get_current_user(
 
     return user
 
-# Dependency để kiểm tra vai trò của user là Admin, Staff, v.v.
 def check_roles(*roles: str):
+    ''' Dependency to check user roles is in allowed roles '''
     def checker(current_user: User = Depends(get_current_user)):
         if current_user.role.value not in roles:
             raise HTTPException(

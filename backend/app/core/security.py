@@ -8,21 +8,21 @@ import string
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
-# Tạo mật khẩu tạm thời
 def generate_temp_password(length=settings.LENGTH_OF_TEMP_PASSWORD):
+    ''' Generate a random temporary password '''
     chars = string.ascii_letters + string.digits
     return "".join(secrets.choice(chars) for _ in range(length))
 
-# Hàm băm mật khẩu và xác minh mật khẩu
 def hash_password(password: str) -> str:
+    ''' Hash the password '''
     return pwd_context.hash(password)
 
-# Xác minh mật khẩu
 def verify_password(plain_password: str, hashed_password: str) -> bool:
+    ''' Verify the password '''
     return pwd_context.verify(plain_password, hashed_password)
 
-# Tạo và giải mã JWT token
 def create_access_token(data: dict) -> str:
+    ''' Create a JWT token '''
     to_encode = data.copy()
     expire = datetime.now() + timedelta(
         minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES
@@ -36,8 +36,8 @@ def create_access_token(data: dict) -> str:
     )
     return encoded_jwt
 
-# Giải mã JWT token
 def decode_token(token: str) -> dict:
+    ''' Decode a JWT token '''
     try:
         payload = jwt.decode(
             token,
