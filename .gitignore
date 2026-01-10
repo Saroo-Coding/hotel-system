@@ -19,4 +19,7 @@ README.md
 
 backend/.env
 
+# logs
+log/
 logs/
+*.log
