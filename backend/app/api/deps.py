@@ -1,15 +1,15 @@
+from math import ceil
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
 
 from app.core.database import SessionLocal
 from app.core.security import decode_token
-from app.models.users import User
+from app.models.users import User, UserStatus
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/login")
 
 def get_db():
-    ''' Dependency to get DB session '''
     db = SessionLocal()
     try:
         yield db
@@ -30,12 +30,20 @@ def get_current_user(
         )
 
     user_id = payload.get("sub")
+    
     if not user_id:
-        raise HTTPException(status_code=401, detail="Invalid token payload")
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED, 
+            detail="Invalid token payload"
+        )
 
     user = db.query(User).filter(User.id == user_id).first()
-    if not user:
-        raise HTTPException(status_code=401, detail="User not found")
+
+    if not user or user.status != UserStatus.ACTIVE:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Account inactive or blocked",
+        )
 
     return user
 
@@ -50,3 +58,28 @@ def check_roles(*roles: str):
         return current_user
     return checker
 
+def pagination_response(
+    *,
+    data: list,
+    page: int,
+    limit: int,
+    total: int,
+    message: str = "Success",
+    code: int = 200
+):
+    total_pages = ceil(total / limit) if total else 1
+
+    return {
+        "success": True,
+        "code": code,
+        "message": message,
+        "data": data,
+        "meta": {
+            "page": page,
+            "limit": limit,
+            "total": total,
+            "total_pages": total_pages,
+            "has_next": page < total_pages,
+            "has_prev": page > 1,
+        }
+    }
