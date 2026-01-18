@@ -5,7 +5,7 @@ from app.core.config import settings
 engine = create_engine(
     settings.DATABASE_URL,
     pool_pre_ping=True,
-    echo=False  # LOG SQL để debug
+    echo=False
 )
 
 # autocommit=False — không tự động commit; phải gọi db.commit() rõ ràng khi muốn lưu thay đổi.

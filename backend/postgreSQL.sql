@@ -27,7 +27,7 @@ CREATE INDEX idx_guests_email ON guests(email);
 -- table users
 CREATE TYPE user_role AS ENUM (
     'CUSTOMER',
-    'HOTEL_STAFF',
+    'STAFF',
     'ADMIN'
 );
 
@@ -52,8 +52,11 @@ CREATE TABLE IF NOT EXISTS users (
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT now()
 );
 
-CREATE INDEX idx_users_email ON users(email); -- Tìm user theo email
-CREATE INDEX idx_users_phone ON users(phone); -- Tìm user theo phone
+CREATE INDEX idx_users_email ON users(email);
+CREATE INDEX idx_users_phone ON users(phone);
+CREATE INDEX idx_users_role ON users(role);
+CREATE INDEX idx_users_status ON users(status);
+CREATE INDEX idx_users_name ON users(full_name);
 
 -- table hotels
 CREATE TYPE hotel_status AS ENUM ('ACTIVE', 'INACTIVE');
@@ -270,3 +273,6 @@ CREATE TABLE refresh_tokens (
     revoked BOOLEAN DEFAULT FALSE,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT now()
 );
+
+-- TODO: Thêm bảng reviews
+-- TODO: Thêm bảng notifications
