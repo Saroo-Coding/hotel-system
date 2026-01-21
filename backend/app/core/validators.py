@@ -1,4 +1,5 @@
 import datetime
+from decimal import Decimal
 import re
 
 # TODO: Chuẩn hoá error response format
@@ -55,12 +56,23 @@ def validate_birth_date(birth_date: datetime) -> datetime:
 
 def validate_not_empty(value: str, field_name="Field") -> str:
     ''' Validate field is not empty '''
-    if not value or not value.strip():
+    if value is None:
+        raise ValueError(f"{field_name} is required")
+
+    if not isinstance(value, str):
+        raise ValueError(f"{field_name} must be a string")
+
+    value = value.strip()
+    if value == "":
         raise ValueError(f"{field_name} must not be empty")
-    return value.strip()
+
+    return value
 
 def validate_positive_number(value: int | float, field_name="Value"):
     ''' Validate value is a positive number '''
+    if value is None:
+        raise ValueError(f"{field_name} is required")
+    
     if value <= 0:
         raise ValueError(f"{field_name} must be greater than 0")
     return value
@@ -70,3 +82,18 @@ def validate_checkin_checkout(check_in, check_out):
     if check_in >= check_out:
         raise ValueError("Check-out date must be after check-in date")
     return check_in, check_out
+
+def validate_vnd_decimal(value: Decimal) -> Decimal:
+    if value is None:
+        raise ValueError("Base price is required")
+
+    if not isinstance(value, Decimal):
+        raise ValueError("Base price must be a Decimal")
+
+    if value.as_tuple().exponent != 0:
+        raise ValueError("Base price must not have decimal places")
+
+    if value <= 0:
+        raise ValueError("Base price must be greater than 0")
+
+    return value

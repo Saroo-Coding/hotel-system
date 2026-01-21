@@ -1,3 +1,4 @@
+from uuid import UUID
 from fastapi import APIRouter, status, Depends, HTTPException, Query
 from pytest import Session
 from sqlalchemy import func, or_
@@ -6,10 +7,9 @@ from app.core.database import SessionLocal
 from app.api.deps import check_roles, pagination_response
 from app.models.users import User, UserRole
 from app.models.hotels import Hotel, HotelStatus
+from app.schemas.hotel_schemas import HotelUpdate
 
 import logging
-
-from backend.app.schemas.hotel_schemas import HotelUpdate
 
 router = APIRouter()
 logger = logging.getLogger("HotelRouter")
@@ -70,18 +70,18 @@ def get_hotels(
             data=data,
             page=page,
             limit=limit,
-            total=total,
+            total=total
         )
     except Exception as e:
-        logger.error(f"Error fetching hotels: {e}")
+        logger.exception("Unexpected error in get_hotels. ERROR: " + str(e))
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, 
             detail="Internal Server Error"
         )
     
-@router.get("/{hotel_id}/details")
+@router.get("/details")
 def get_hotel_details(
-    hotel_id: str,
+    hotel_id: UUID,
     db: Session = Depends(get_db)
 ):
     try:
@@ -91,29 +91,33 @@ def get_hotel_details(
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail="Hotel not found"
             )
-        
+
         return {
-            "id": hotel.id,
-            "name": hotel.name,
-            "address": hotel.address,
-            "phone": hotel.phone,
-            "email": hotel.email,
-            "description": hotel.description,
-            "created_at": hotel.created_at.strftime("%d/%m/%Y %H:%M"),
-            "updated_at": hotel.updated_at.strftime("%d/%m/%Y %H:%M"),
+            "success": True,
+            "code": status.HTTP_200_OK,
+            "message": "Success",
+            "data": {
+                "id": str(hotel.id),
+                "name": hotel.name,
+                "address": hotel.address,
+                "phone": hotel.phone,
+                "email": hotel.email,
+                "status": hotel.status.value,
+                "created_at": hotel.created_at.strftime("%d/%m/%Y %H:%M"),
+                "updated_at": hotel.updated_at.strftime("%d/%m/%Y %H:%M")
+            }
         }
-    except HTTPException:
-        raise
+
     except Exception as e:
-        logger.error(f"Error fetching hotel details: {e}")
+        logger.exception("Unexpected error in get_hotel_details. ERROR: " + str(e))
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, 
             detail="Internal Server Error"
         )
 
-@router.put("/{hotel_id}/admin/update")
+@router.put("/admin/update")
 def update_hotel(
-    hotel_id: str,
+    hotel_id: UUID,
     payload: HotelUpdate,
     db: Session = Depends(get_db),
     _: User = Depends(check_roles(UserRole.ADMIN))
@@ -136,7 +140,7 @@ def update_hotel(
         
         return {
                 "success": True,
-                "code": 200,
+                "code": status.HTTP_200_OK,
                 "message": "Update successfully",
                 "data": {
                     "id": hotel.id
@@ -144,15 +148,15 @@ def update_hotel(
             }
 
     except Exception as e:
-        logger.error(f"Error updating hotel: {e}")
+        logger.exception("Unexpected error in update_hotel. ERROR: " + str(e))
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, 
             detail="Internal Server Error"
         )
 
-@router.patch("/{hotel_id}/admin/activate")
+@router.patch("/admin/activate")
 def activate_hotel(
-    hotel_id: str,
+    hotel_id: UUID,
     db: Session = Depends(get_db),
     _: User = Depends(check_roles(UserRole.ADMIN))
 ):
@@ -170,21 +174,20 @@ def activate_hotel(
         
         return {
                 "success": True,
-                "code": 200,
+                "code": status.HTTP_200_OK,
                 "message": "Hotel activated successfully"
             }
-    except HTTPException:
-        raise
+
     except Exception as e:
-        logger.error(f"Error activating hotel: {e}")
+        logger.exception("Unexpected error in activate_hotel. ERROR: " + str(e))
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, 
             detail="Internal Server Error"
         )
 
-@router.patch("/{hotel_id}/admin/deactivate")
+@router.patch("/admin/deactivate")
 def deactivate_hotel(
-    hotel_id: str,
+    hotel_id: UUID,
     db: Session = Depends(get_db),
     _: User = Depends(check_roles(UserRole.ADMIN))
 ):
@@ -202,13 +205,12 @@ def deactivate_hotel(
         
         return {
                 "success": True,
-                "code": 200,
+                "code": status.HTTP_200_OK,
                 "message": "Hotel deactivated successfully"
             }
-    except HTTPException:
-        raise
+
     except Exception as e:
-        logger.error(f"Error deactivating hotel: {e}")
+        logger.exception("Unexpected error in deactivate_hotel. ERROR: " + str(e))
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, 
             detail="Internal Server Error"

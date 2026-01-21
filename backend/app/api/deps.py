@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 
 from app.core.database import SessionLocal
 from app.core.security import decode_token
-from app.models.users import User, UserStatus
+from app.models.users import User, UserRole, UserStatus
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/login")
 
@@ -47,10 +47,10 @@ def get_current_user(
 
     return user
 
-def check_roles(*roles: str):
+def check_roles(*roles: UserRole):
     ''' Dependency to check user roles is in allowed roles '''
     def checker(current_user: User = Depends(get_current_user)):
-        if current_user.role.value not in roles:
+        if current_user.role not in roles:
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail="Permission denied",

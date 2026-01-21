@@ -1,3 +1,4 @@
+from uuid import UUID
 from fastapi import APIRouter, status, Depends, HTTPException, Query
 from sqlalchemy import or_
 from sqlalchemy.orm import Session
@@ -24,36 +25,81 @@ def get_db():
     finally:
         db.close()
 
-@router.get("/list_users")
+# TODO: gửi email thông báo mật khẩu tạm thời
+@router.post("/admin/create")
+def admin_create_user(
+    payload: AdminCreateUser,
+    db: Session = Depends(get_db),
+    _: User = Depends(check_roles(UserRole.ADMIN))
+):
+    ''' Register new user role STAFF or CUSTOMER (only ADMIN) '''
+    try:
+        if payload.email:
+            if db.query(User).filter(User.email == payload.email).first():
+                raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Email already exists")
+
+        if payload.phone:
+            if db.query(User).filter(User.phone == payload.phone).first():
+                raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Phone already exists")
+        
+        user = User(
+            email=payload.email,
+            phone=payload.phone,
+            password_hash=hash_password(settings.BASE_PASSWORD),
+            full_name=payload.full_name if payload.full_name is not None else payload.role,
+            role=payload.role
+        )
+
+        db.add(user)
+        db.commit()
+        db.refresh(user)
+
+        return {
+            "success": True,
+            "code": status.HTTP_200_OK,
+            "message": "Success"
+        }
+
+    except Exception as e:
+        db.rollback()
+        logger.exception("Unexpected error in admin_create_user. ERROR: " + str(e))
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Internal Server Error"
+        )
+
+@router.get("/manager/list")
 def get_all_users(
     page: int = Query(1, ge=1),
     limit: int = Query(20, ge=1, le=100),
-    role: str | None = Query(None),
-    status: str | None = Query(None),
+    role: UserRole | None = Query(None),
+    status_user: UserStatus | None = Query(None),
     keyword: str | None = Query(None),
 
     db: Session = Depends(get_db),
-    _: User = Depends(check_roles("ADMIN", "STAFF"))
+    _: User = Depends(check_roles(UserRole.ADMIN, UserRole.STAFF))
 ):
     """ Get users with pagination & filters """
     try:
         query = db.query(User)
 
-        if role:
+        if role is not None:
             query = query.filter(User.role == role)
 
-        if status:
-            query = query.filter(User.status == status)
+        if status_user is not None:
+            query = query.filter(User.status == status_user)
 
         if keyword:
-            keyword_like = f"%{keyword}%"
-            query = query.filter(
-                or_(
-                    User.email.ilike(keyword_like),
-                    User.phone.ilike(keyword_like),
-                    User.full_name.ilike(keyword_like),
+            keyword = keyword.strip()
+            if keyword:
+                keyword_like = f"%{keyword}%"
+                query = query.filter(
+                    or_(
+                        User.email.ilike(keyword_like),
+                        User.phone.ilike(keyword_like),
+                        User.full_name.ilike(keyword_like),
+                    )
                 )
-            )
 
         total = query.count()
 
@@ -82,21 +128,21 @@ def get_all_users(
             data=data,
             page=page,
             limit=limit,
-            total=total,
+            total=total
         )
 
     except Exception as e:
         logger.exception("Unexpected error in get_all_users. ERROR: " + str(e))
         raise HTTPException(
-            status_code=500,
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Internal Server Error"
         )
 
-@router.get("/{user_id}/info")
+@router.get("/manager/details")
 def get_user_by_id(
-    user_id: str,
+    user_id: UUID,
     db: Session = Depends(get_db),
-    _: User = Depends(check_roles("ADMIN","STAFF"))
+    _: User = Depends(check_roles(UserRole.ADMIN, UserRole.STAFF))
 ):
     ''' Get user by ID (only ADMIN and STAFF) '''
     try:
@@ -108,19 +154,19 @@ def get_user_by_id(
             )
         
         return {
-        "success": True,
-        "code": 200,
-        "message": "Success",
-        "data": {
-            "id": str(user.id),
-            "email": user.email,
-            "phone": user.phone,
-            "full_name": user.full_name,
-            "role": user.role.value,
-            "status": user.status,
-            "updated_at": user.updated_at.strftime("%d/%m/%Y %H:%M")
+            "success": True,
+            "code": status.HTTP_200_OK,
+            "message": "Success",
+            "data": {
+                "id": str(user.id),
+                "email": user.email,
+                "phone": user.phone,
+                "full_name": user.full_name,
+                "role": user.role.value,
+                "status": user.status,
+                "updated_at": user.updated_at.strftime("%d/%m/%Y %H:%M")
+            }
         }
-    }
 
     except Exception as e:
         logger.exception("Unexpected error in get_user_by_id. ERROR: " + str(e))
@@ -129,49 +175,79 @@ def get_user_by_id(
             detail="Internal Server Error"
         )
 
-# TODO: gửi email thông báo mật khẩu tạm thời
-@router.post("/admin/users")
-def admin_create_user(
-    payload: AdminCreateUser,
+@router.put("/manager/update")
+def update_user(
+    user_id: UUID,
+    payload: UserUpdateDTO,
     db: Session = Depends(get_db),
-    _: User = Depends(check_roles(UserRole.ADMIN))
+    _: User = Depends(check_roles(UserRole.ADMIN, UserRole.STAFF))
 ):
-    ''' Register new user role STAFF or CUSTOMER (only ADMIN) '''
+    ''' Update user info (ADMIN and STAFF) '''
     try:
-        if payload.email:
-            if db.query(User).filter(User.email == payload.email).first():
-                raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Email already exists")
+        user = db.query(User).filter(User.id == user_id).first()
+        if not user:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND, 
+                detail="User not found"
+            )
 
-        if payload.phone:
-            if db.query(User).filter(User.phone == payload.phone).first():
-                raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Phone already exists")
-        user = User(
-            email=payload.email,
-            phone=payload.phone,
-            password_hash=hash_password(settings.BASE_PASSWORD),
-            full_name=payload.full_name if payload.full_name is not None else payload.role,
-            role=payload.role
+        update_data = payload.model_dump(exclude_unset=True) # Only fields provided in the request body
+
+        for field, value in update_data.items():
+            setattr(user, field, value)
+
+        db.commit()
+        db.refresh(user)
+    
+        return {
+            "success": True,
+            "code": status.HTTP_200_OK,
+            "message": "Update successfully",
+            "data": {
+                "id": user.id
+            }
+        }
+    except Exception as e:
+        db.rollback()
+        logger.exception("Unexpected error in update_user. ERROR: " + str(e))
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Internal server error"
         )
+    
+@router.patch("/manager/status")
+def change_user_status(
+    user_id: UUID,
+    user_status: UserStatus,
+    db: Session = Depends(get_db),
+    _: User = Depends(check_roles(UserRole.ADMIN, UserRole.STAFF))
+):
+    ''' Change user status (only ADMIN and STAFF) '''
+    try:
+        user = db.query(User).filter(User.id == user_id).first()
+        if not user:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
 
-        db.add(user)
+        user.status = user_status
+
         db.commit()
         db.refresh(user)
 
         return {
             "success": True,
-            "code": 200,
-            "message": "Success"
+            "code": status.HTTP_200_OK,
+            "message": "Change status successfully"
         }
 
     except Exception as e:
         db.rollback()
-        logger.exception("Unexpected error in admin_create_user. ERROR: " + str(e))
+        logger.exception("Unexpected error in change_user_status. ERROR: " + str(e))
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Internal Server Error"
         )
 
-@router.post("/staff/customers")
+@router.post("/staff/create")
 def staff_create_customer(
     payload: StaffCreateCustomer,
     db: Session = Depends(get_db),
@@ -200,98 +276,13 @@ def staff_create_customer(
 
         return {
             "success": True,
-            "code": 200,
+            "code": status.HTTP_200_OK,
             "message": "Success"
         }
 
     except Exception as e:
         db.rollback()
         logger.exception("Unexpected error in staff_create_customer. ERROR: " + str(e))
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Internal Server Error"
-        )
-    
-@router.put("/{user_id}/update")
-def update_user(
-    user_id: str,
-    payload: UserUpdateDTO,
-    db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
-):
-    ''' Update user info (ADMIN and STAFF) '''
-    try:
-        user = db.query(User).filter(User.id == user_id).first()
-        if not user:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND, 
-                detail="User not found"
-            )
-
-        if current_user.role == "STAFF" and user.role == "ADMIN":
-            raise HTTPException(
-                status_code=status.HTTP_403_FORBIDDEN,
-                detail="STAFF cannot update ADMIN user"
-            )
-
-        if current_user.role == "STAFF":
-            if payload.role is not None or payload.status is not None:
-                raise HTTPException(
-                    status_code=status.HTTP_403_FORBIDDEN,
-                    detail="STAFF cannot change role or status"
-                )
-
-        update_data = payload.model_dump(exclude_unset=True) # Only fields provided in the request body
-
-        for field, value in update_data.items():
-            setattr(user, field, value)
-
-        db.commit()
-        db.refresh(user)
-    
-        return {
-            "success": True,
-            "code": 200,
-            "message": "Update successfully",
-            "data": {
-                "id": user.id
-            }
-        }
-    except Exception as e:
-        db.rollback()
-        logger.exception("Unexpected error in update_user. ERROR: " + str(e))
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Internal server error"
-        )
-    
-@router.patch("/staff/{user_id}/status")
-def change_user_status(
-    user_id: str,
-    user_status: UserStatus,
-    db: Session = Depends(get_db),
-    _: User = Depends(check_roles("ADMIN","STAFF"))
-):
-    ''' Change user status (only ADMIN and STAFF) '''
-    try:
-        user = db.query(User).filter(User.id == user_id).first()
-        if not user:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
-
-        user.status = user_status
-
-        db.commit()
-        db.refresh(user)
-
-        return {
-            "success": True,
-            "code": 200,
-            "message": "Change status successfully"
-        }
-
-    except Exception as e:
-        db.rollback()
-        logger.exception("Unexpected error in change_user_status. ERROR: " + str(e))
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Internal Server Error"
@@ -306,7 +297,7 @@ def get_current_user_info(
     try:
         return {
             "success": True,
-            "code": 200,
+            "code": status.HTTP_200_OK,
             "message": "Success",
             "data": {
                 "id": str(user.id),
@@ -342,7 +333,7 @@ def user_change_password(
 
         return {
             "success": True,
-            "code": 200,
+            "code": status.HTTP_200_OK,
             "message": "Success"
         }
 

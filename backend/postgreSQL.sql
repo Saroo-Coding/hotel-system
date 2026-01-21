@@ -102,7 +102,8 @@ CREATE INDEX idx_hotel_staffs_user_id ON hotel_staffs(user_id); -- Tìm khách s
 -- table rooms lưu thông tin phòng của khách sạn
 CREATE TYPE room_status AS ENUM (
     'AVAILABLE',
-    'MAINTENANCE'
+    'MAINTENANCE',
+    'BOOKED'
 );
 
 CREATE TYPE bed_type AS ENUM (
@@ -123,7 +124,8 @@ CREATE TABLE IF NOT EXISTS rooms (
     status room_status DEFAULT 'AVAILABLE',
     description TEXT,
 
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT now()
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT now(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT now()
 );
 CREATE INDEX idx_rooms_hotel_id ON rooms (hotel_id); -- Tìm phòng theo khách sạn
 CREATE INDEX idx_rooms_hotel_status ON rooms (hotel_id, status); -- Phòng trống theo khách sạn

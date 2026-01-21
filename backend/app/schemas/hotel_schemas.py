@@ -1,8 +1,13 @@
+from enum import Enum
 from pydantic import BaseModel, field_validator
 from typing import Optional
 
 from app.models.hotels import HotelStatus
-from backend.app.core.validators import validate_not_empty, validate_phone_vn
+from app.core.validators import validate_not_empty, validate_phone_vn
+
+class HotelStatus(str, Enum):
+    ACTIVE = "ACTIVE"
+    INACTIVE = "INACTIVE"
 
 class HotelUpdate(BaseModel):
     name: Optional[str] = None

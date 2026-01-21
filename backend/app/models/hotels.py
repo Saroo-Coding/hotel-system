@@ -20,3 +20,4 @@ class Hotel(Base):
     email = Column(String(255), unique=True, nullable=False)
     status = Column(Enum(HotelStatus), nullable=False, default=HotelStatus.ACTIVE)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), server_default=func.now())
