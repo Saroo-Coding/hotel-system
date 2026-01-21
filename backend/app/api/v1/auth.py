@@ -45,13 +45,11 @@ def register_customer(
                 )
 
         user = User(
-            user = User(
-                email=payload.email,
-                phone=payload.phone,
-                password_hash=hash_password(payload.password),
-                full_name=UserRole.CUSTOMER,
-                role=UserRole.CUSTOMER
-            )
+            email=payload.email,
+            phone=payload.phone,
+            password_hash=hash_password(payload.password),
+            full_name=UserRole.CUSTOMER.value,
+            role=UserRole.CUSTOMER
         )
 
         db.add(user)

@@ -1,6 +1,5 @@
 from fastapi import FastAPI
-from app.api.v1.api import api_router
-import app.core.logging
+from app.api.api import api_router
 
 def create_app():
     app = FastAPI(title="Hotel Booking System")

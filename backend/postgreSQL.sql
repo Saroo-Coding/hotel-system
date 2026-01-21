@@ -66,13 +66,19 @@ CREATE TABLE IF NOT EXISTS hotels (
 
     name VARCHAR(255) NOT NULL,
     address TEXT NOT NULL,
-    phone VARCHAR(20) UNIQUE NOT NULL,
-    email VARCHAR(255) UNIQUE NOT NULL,
+    phone VARCHAR(20) NOT NULL,
+    email VARCHAR(255) NOT NULL,
 
     status hotel_status NOT NULL DEFAULT 'ACTIVE',
 
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT now()
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT now(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT now()
 );
+
+CREATE INDEX idx_hotels_name ON hotels(name);
+CREATE INDEX idx_hotels_address ON hotels(address);
+CREATE INDEX idx_hotels_phone ON hotels(phone);
+CREATE INDEX idx_hotels_email ON hotels(email);
 
 -- table hotel_staffs (xem users role STAFF anh làm việc ở đâu & quyền gì tại đó)
 -- Mỗi nhân viên 1-n khách sạn

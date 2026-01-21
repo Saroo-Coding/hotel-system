@@ -5,14 +5,14 @@ from sqlalchemy.orm import Session
 from app.core.database import SessionLocal
 from app.core.security import hash_password, verify_password
 from app.core.config import settings
-from app.models.users import User, UserRole, UserStatus
 from app.api.deps import check_roles, get_current_user, pagination_response
 from app.schemas.user_schemas import AdminCreateUser, StaffCreateCustomer, UserUpdateDTO, ChangePasswordDTO
+from app.models.users import User, UserRole, UserStatus
+from app.models.bookings import Booking
+from app.models.refresh_tokens import RefreshToken
 
 import logging
 
-from backend.app.models.bookings import Booking
-from backend.app.models.refresh_tokens import RefreshToken
 
 router = APIRouter()
 logger = logging.getLogger("UsersRouter")
@@ -190,7 +190,7 @@ def staff_create_customer(
             email=payload.email,
             phone=payload.phone,
             password_hash=hash_password(settings.BASE_PASSWORD),
-            full_name=payload.full_name if payload.full_name is not None else UserRole.CUSTOMER,
+            full_name=payload.full_name if payload.full_name is not None else UserRole.CUSTOMER.value,
             role=UserRole.CUSTOMER
         )
 
@@ -256,7 +256,7 @@ def update_user(
             "data": {
                 "id": user.id
             }
-    }
+        }
     except Exception as e:
         db.rollback()
         logger.exception("Unexpected error in update_user. ERROR: " + str(e))

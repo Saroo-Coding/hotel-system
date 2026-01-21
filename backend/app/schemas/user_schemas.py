@@ -27,7 +27,7 @@ class AdminCreateUser(BaseModel):
 
     @model_validator(mode="after")
     def email_or_phone_required(self):
-        if not self.email and not self.phone:
+        if self.email is None and self.phone is None:
             raise ValueError("Account is required")
         return self
 
@@ -54,7 +54,7 @@ class StaffCreateCustomer(BaseModel):
 
     @model_validator(mode="after")
     def email_or_phone_required(self):
-        if not self.email and not self.phone:
+        if self.email is None and self.phone is None:
             raise ValueError("Account is required")
         return self
 
