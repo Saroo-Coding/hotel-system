@@ -17,10 +17,11 @@ CREATE TABLE IF NOT EXISTS guests (
     nationality VARCHAR(50) NOT NULL,
     phone VARCHAR(20) NOT NULL,
     email VARCHAR(255) NOT NULL,
+    del_flag BOOLEAN DEFAULT FALSE,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT now()
 );
-CREATE INDEX idx_guests_user_id ON guests(user_id); -- Tìm guest theo user_id
-CREATE UNIQUE INDEX idx_guests_id_number ON guests(id_number); -- Tìm guest theo số CCCD / Passport
+CREATE INDEX idx_guests_full_name ON guests(full_name);
+CREATE INDEX idx_guests_id_number ON guests(id_number); -- Tìm guest theo số CCCD / Passport
 CREATE INDEX idx_guests_phone ON guests(phone);
 CREATE INDEX idx_guests_email ON guests(email);
 
