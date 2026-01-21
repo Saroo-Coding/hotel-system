@@ -14,7 +14,6 @@ from app.models.refresh_tokens import RefreshToken
 
 import logging
 
-
 router = APIRouter()
 logger = logging.getLogger("UsersRouter")
 
@@ -25,7 +24,6 @@ def get_db():
     finally:
         db.close()
 
-# TODO: gửi email thông báo mật khẩu tạm thời
 @router.post("/admin/create")
 def admin_create_user(
     payload: AdminCreateUser,
@@ -97,7 +95,7 @@ def get_all_users(
                     or_(
                         User.email.ilike(keyword_like),
                         User.phone.ilike(keyword_like),
-                        User.full_name.ilike(keyword_like),
+                        User.full_name.ilike(keyword_like)
                     )
                 )
 
@@ -119,7 +117,7 @@ def get_all_users(
                 "full_name": user.full_name,
                 "role": user.role.value,
                 "status": user.status,
-                "updated_at": user.updated_at.strftime("%d/%m/%Y %H:%M"),
+                "updated_at": user.updated_at.strftime("%d/%m/%Y %H:%M")
             }
             for user in users
         ]
@@ -288,7 +286,6 @@ def staff_create_customer(
             detail="Internal Server Error"
         )
 
-# TODO: thêm chức năng avatar
 @router.get("/me")
 def get_current_user_info(
     user: User = Depends(get_current_user)
@@ -354,7 +351,7 @@ def deactivate_my_account(
     if current_user.role != UserRole.CUSTOMER:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="Permission denied",
+            detail="Permission denied"
         )
     
     try:

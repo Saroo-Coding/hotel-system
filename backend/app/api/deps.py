@@ -26,7 +26,7 @@ def get_current_user(
     if not payload:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid or expired token",
+            detail="Invalid or expired token"
         )
 
     user_id = payload.get("sub")
@@ -42,7 +42,7 @@ def get_current_user(
     if not user or user.status != UserStatus.ACTIVE:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="Account inactive or blocked",
+            detail="Account inactive or blocked"
         )
 
     return user
@@ -53,7 +53,7 @@ def check_roles(*roles: UserRole):
         if current_user.role not in roles:
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
-                detail="Permission denied",
+                detail="Permission denied"
             )
         return current_user
     return checker
@@ -80,6 +80,6 @@ def pagination_response(
             "total": total,
             "total_pages": total_pages,
             "has_next": page < total_pages,
-            "has_prev": page > 1,
+            "has_prev": page > 1
         }
     }

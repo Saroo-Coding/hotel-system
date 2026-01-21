@@ -13,7 +13,7 @@ from app.schemas.room_schemas import AdminCreateRoom, AdminUpdateRoom
 import logging
 
 router = APIRouter()
-logger = logging.getLogger("HotelRouter")
+logger = logging.getLogger("RoomRouter")
 
 def get_db():
     db = SessionLocal()
@@ -75,7 +75,7 @@ def get_list_rooms(
             "bed_type": room.bed_type.value,
             "base_price": int(room.base_price),
             "status": room.status.value,
-            "description": room.description,
+            "description": room.description
         }
         for room in rooms
     ]

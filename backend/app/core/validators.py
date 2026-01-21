@@ -1,8 +1,6 @@
-import datetime
+from datetime import date, datetime
 from decimal import Decimal
 import re
-
-# TODO: Chuẩn hoá error response format
 
 def validate_password(password: str) -> str:
     ''' Validate password strength '''
@@ -48,10 +46,25 @@ def validate_full_name(name: str) -> str:
     return name.strip()
 
 def validate_birth_date(birth_date: datetime) -> datetime:
-    ''' Validate birth date (user must be at least 18 years old) '''
-    age = (datetime.now() - birth_date).days / 365
+    if birth_date is None:
+        raise ValueError("Birth date is required")
+    
+    if isinstance(birth_date, datetime):
+        birth = birth_date.date()
+    elif isinstance(birth_date, date):
+        birth = birth_date
+    else:
+        raise ValueError("Birth date must be a date")
+
+    today = date.today()
+
+    age = today.year - birth.year
+    if (today.month, today.day) < (birth.month, birth.day):
+        age -= 1
+
     if age < 18:
         raise ValueError("User must be at least 18 years old")
+
     return birth_date
 
 def validate_not_empty(value: str, field_name="Field") -> str:

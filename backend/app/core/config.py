@@ -14,7 +14,6 @@ class Settings(BaseSettings):
 
     LENGTH_OF_TEMP_PASSWORD: int = 8
 
-    # TODO: Xóa sau khi hoàn thành chức năng gửi email
     BASE_PASSWORD: str
 
     class Config:

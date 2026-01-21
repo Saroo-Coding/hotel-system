@@ -69,7 +69,6 @@ def register_customer(
             detail="Internal Server Error"
         )
 
-# TODO: Thêm try except cho các hàm dưới và log lỗi
 @router.post("/login")
 def login(
     response: Response,
