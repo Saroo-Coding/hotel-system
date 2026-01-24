@@ -1,0 +1,24 @@
+{
+  "common": {
+    "login": "Đăng nhập",
+    "register": "Đăng ký",
+    "logout": "Đăng xuất",
+    "save": "Lưu",
+    "cancel": "Hủy"
+  },
+  "login": {
+    "sologan_1": "Tinh tế, sang trọng và đầy đủ tiện nghi",
+    "sologan_2": "Thoải mái, sạch sẽ, thân thiện - ba điều chúng tôi cam kết.",
+    "title": "Chào mừng bạn tới khách sạn Saroo!",
+    "email": "Địa chỉ email",
+    "phone": "Số điện thoại",
+    "password": "Mật khẩu",
+    "placeholder_email": "Nhập tài khoản email",
+    "placeholder_phone": "Nhập số điện thoại",
+    "placeholder_pass": "**********",
+    "remember": "Ghi nhớ",
+    "forgot_pass": "Quên mật khẩu?",
+    "or_login": "Hoặc",
+    "no_account": "Chưa có tài khoản?"
+  }
+}

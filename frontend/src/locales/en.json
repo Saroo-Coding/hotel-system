@@ -1,0 +1,24 @@
+{
+  "common": {
+    "login": "Login",
+    "register": "Register",
+    "logout": "Logout",
+    "save": "Save",
+    "cancel": "Cancel"
+  },
+  "login": {
+    "sologan_1": "Refined, luxurious, and fully equipped",
+    "sologan_2": "Comfortable, clean, friendly - ​​three things we are committed to.",
+    "title": "Welcome to Saroo Hotel!",
+    "email": "Email address",
+    "phone": "Phone number",
+    "password": "Password",
+    "placeholder_email": "Enter your email",
+    "placeholder_phone": "Enter your phone number",
+    "placeholder_pass": "**********",
+    "remember": "Remember",
+    "forgot_pass": "Forgot Password?",
+    "or_login": "Or",
+    "no_account": "Don't have any account?"
+  }
+}

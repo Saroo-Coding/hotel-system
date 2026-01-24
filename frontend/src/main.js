@@ -1,24 +1,27 @@
-import { createApp } from 'vue'
-import { createPinia } from 'pinia'
-import router from './router'
-import App from './App.vue'
+import { createApp } from "vue";
+import { createPinia } from "pinia";
+import App from "./App.vue";
+import router from "./router";
+import i18n from "./locales";
+import ElementPlus from "element-plus";
+import "element-plus/dist/index.css";
 
-createApp(App)
-  .use(createPinia())
-  .use(router)
-  .mount('#app')
+import "@/assets/styles/theme.css";
+import "@/assets/styles/base.css";
+import "@/assets/styles/components.css";
 
-// import { i18n } from './i18n'
-// import { useAppStore } from '@/stores/app.store'
+import { useAppStore } from "@/stores/app.store";
 
-// const app = createApp(App)
+const app = createApp(App);
+const pinia = createPinia();
 
-// app.use(createPinia())
-// app.use(i18n)
-// app.use(router)
-// app.mount('#app')
+app.use(pinia);
+app.use(router);
+app.use(i18n);
+app.use(ElementPlus);
 
-// // init app settings
-// const appStore = useAppStore()
-// appStore.initTheme()
-// appStore.initLanguage(i18n)
+const appStore = useAppStore();
+appStore.initTheme();
+appStore.initLang();
+
+app.mount("#app");
