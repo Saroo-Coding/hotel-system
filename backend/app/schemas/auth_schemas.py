@@ -1,6 +1,6 @@
 from pydantic import BaseModel, EmailStr, field_validator, model_validator
 from typing import Optional, Literal
-from app.core.validators import validate_not_empty, validate_password, validate_phone_vn
+from app.core.validators import validate_not_empty, validate_password, validate_phone
 
 class RegisterRequest(BaseModel):
     email: Optional[EmailStr] = None
@@ -21,7 +21,7 @@ class RegisterRequest(BaseModel):
         if v is None:
             return v
         validate_not_empty(v, "Phone")
-        return validate_phone_vn(v)
+        return validate_phone(v)
 
     @field_validator("password")
     @classmethod

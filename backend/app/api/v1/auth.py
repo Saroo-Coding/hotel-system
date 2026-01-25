@@ -1,18 +1,19 @@
-from fastapi import APIRouter, Depends, HTTPException, status, Response, Cookie
-from fastapi.security import OAuth2PasswordRequestForm
-from sqlalchemy.orm import Session
+import uuid
+import logging
 from datetime import datetime, timedelta
+
+from fastapi import APIRouter, Depends, Form, HTTPException, status, Response, Cookie
+from fastapi.responses import JSONResponse
+from sqlalchemy.orm import Session
 
 from app.core.database import SessionLocal
 from app.core.security import verify_password, create_access_token, hash_password
 from app.core.config import settings
+from app.core.validators import validate_email, validate_phone
 from app.schemas.auth_schemas import RegisterRequest
 from app.api.deps import get_current_user
 from app.models.users import User, UserRole, UserStatus
 from app.models.refresh_tokens import RefreshToken
-
-import uuid
-import logging
 
 router = APIRouter()
 logger = logging.getLogger("AuthRouter")
@@ -72,72 +73,103 @@ def register_customer(
 @router.post("/login")
 def login(
     response: Response,
-    form_data: OAuth2PasswordRequestForm = Depends(),
+    email: str | None = Form(None),
+    phone: str | None = Form(None),
+    password: str | None = Form(None),
     db: Session = Depends(get_db),
 ):
-    try:
-        user = (
-            db.query(User)
-            .filter(
-                (User.email == form_data.username) |
-                (User.phone == form_data.username)
-            )
-            .first()
+    errors = {}
+    email = email.strip() if email else None
+    phone = phone.strip() if phone else None
+    password = password.strip() if password else None
+
+    if not email and not phone:
+        errors["email"] = "login.error_email_required"
+        errors["phone"] = "login.error_phone_required"
+
+    if email and phone:
+        return JSONResponse(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            content={
+                "success": False,
+                "error": {
+                    "email": "login.error_only_one_identifier",
+                    "phone": "login.error_only_one_identifier",
+                },
+            },
         )
 
-        if not user:
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Invalid credentials",
-            )
-        
-        if user.status != UserStatus.ACTIVE:
-            raise HTTPException(
-                status_code=status.HTTP_403_FORBIDDEN,
-                detail="Account is inactive or blocked"
-            )
-        
-        if not verify_password(form_data.password, user.password_hash):
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Invalid credentials",
-            )
+    if email and not validate_email(email):
+        errors["email"] = "login.error_invalid_email"
 
-        access_token = create_access_token(
-            data={"sub": str(user.id), "role": user.role.value}
+    if phone and not validate_phone(phone):
+        errors["phone"] = "login.error_invalid_phone"
+
+    if not password:
+        errors["password"] = "login.error_password_required"
+
+    if errors:
+        return JSONResponse(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            content={
+                "success": False,
+                "error": errors
+            }
         )
 
-        refresh_token_value = str(uuid.uuid4())
+    if email:
+        user = db.query(User).filter(User.email == email).first()
+    else:
+        user = db.query(User).filter(User.phone == phone).first()
 
-        refresh_token = RefreshToken(
-            user_id=user.id,
-            token=refresh_token_value,
-            expires_at=datetime.now() + timedelta(days=settings.REFRESH_TOKEN_EXPIRE_DAYS),
-            revoked=False,
+    if not user or not verify_password(password, user.password_hash):
+        return JSONResponse(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            content={
+                "success": False,
+                "message": "error.INVALID_CREDENTIALS",
+            }
         )
 
-        db.add(refresh_token)
-        db.commit()
-
-        response.set_cookie(
-            key="refresh_token",
-            value=refresh_token_value,
-            httponly=True,
-            secure=True,
-            samesite="lax",
-            path="/api/v1/auth/refresh",
+    if user.status != UserStatus.ACTIVE:
+        return JSONResponse(
+            status_code=status.HTTP_403_FORBIDDEN,
+            content={
+                "success": False,
+                "message": "error.ACCOUNT_INACTIVE",
+            }
         )
 
-        return {
-            "access_token": access_token,
-            "token_type": "bearer",
-        }
-    except Exception as e:
-        logger.exception("Unexpected error in login. ERROR: " + str(e))
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Internal Server Error"
-        )
+    access_token = create_access_token(
+        data={"sub": str(user.id), "role": user.role.value}
+    )
+
+    refresh_token_value = str(uuid.uuid4())
+
+    refresh_token = RefreshToken(
+        user_id=user.id,
+        token=refresh_token_value,
+        expires_at=datetime.utcnow()
+        + timedelta(days=settings.REFRESH_TOKEN_EXPIRE_DAYS),
+        revoked=False,
+    )
+
+    db.add(refresh_token)
+    db.commit()
+
+    response.set_cookie(
+        key="refresh_token",
+        value=refresh_token_value,
+        httponly=True,
+        secure=True,
+        samesite="lax",
+        path="/api/v1/auth/refresh",
+    )
+
+    return {
+        "access_token": access_token,
+        "token_type": "bearer",
+    }
 
 @router.post("/refresh")
 def refresh_token(
@@ -204,13 +236,21 @@ def logout(
     if refresh_token:
         token_in_db = (
             db.query(RefreshToken)
-            .filter(RefreshToken.token == refresh_token)
+            .filter(
+                RefreshToken.token == refresh_token,
+                RefreshToken.revoked == False
+            )
             .first()
         )
         if token_in_db:
             token_in_db.revoked = True
             db.commit()
 
-    response.delete_cookie("refresh_token", path="/api/v1/auth/refresh")
+    response.delete_cookie(
+        key="refresh_token",
+        path="/api/v1/auth/refresh",
+        httponly=True,
+    )
 
     return {"message": "Logged out"}
+

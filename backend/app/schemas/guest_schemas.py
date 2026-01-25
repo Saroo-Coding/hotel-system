@@ -3,7 +3,7 @@ from uuid import UUID
 from datetime import date
 from typing import Optional
 
-from app.core.validators import validate_birth_date, validate_full_name, validate_not_empty, validate_phone_vn, validate_vnd_decimal, validate_positive_number
+from app.core.validators import validate_birth_date, validate_full_name, validate_not_empty, validate_phone, validate_vnd_decimal, validate_positive_number
 
 class StaffCreateGuest(BaseModel):
     user_id: Optional[UUID] = None
@@ -23,7 +23,7 @@ class StaffCreateGuest(BaseModel):
     @field_validator('phone')
     def validate_phone_field(cls, v):
         if v is not None:
-            return validate_phone_vn(v)
+            return validate_phone(v)
         return v
 
     @field_validator('date_of_birth')
@@ -73,7 +73,7 @@ class UpdateGuest(BaseModel):
     @field_validator('phone')
     def validate_phone_field(cls, v):
         if v is not None:
-            return validate_phone_vn(v)
+            return validate_phone(v)
         return v
 
     @field_validator('date_of_birth')

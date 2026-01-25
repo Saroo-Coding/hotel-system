@@ -1,6 +1,6 @@
 <script setup>
 /* ===================== CORE ===================== */
-import { ref } from "vue";
+import { ref, reactive } from "vue";
 import { useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
 
@@ -23,22 +23,43 @@ const router = useRouter();
 const authStore = useAuthStore();
 
 /* ===================== STATE ===================== */
-const username = ref("");
-const password = ref("");
+const data = reactive({
+  email: "",
+  phone: "",
+  password: "",
+});
 const activeTab = ref("email");
+const errors = ref({});
 const rememberMe = ref(false);
 const loading = ref(false);
 
 /* ===================== METHODS ===================== */
+const handleTabChange = () => {
+  data.email = "";
+  data.phone = "";
+  data.password = "";
+  errors.value = {};
+};
+
 const submit = async () => {
-  if (!username.value || !password.value) return;
+  if (loading.value) return;
 
   loading.value = true;
+  errors.value = {};
+
   try {
-    await authStore.login(username.value, password.value);
+    await authStore.login(data);
     router.push("/");
   } catch (err) {
-    ElMessage.error(err?.message || t("login.error"));
+    if (err?.error) {
+      errors.value = err.error;
+    } else if (err?.message) {
+      ElMessage({
+        showClose: true,
+        message: t(err.message),
+        type: "error",
+      });
+    }
   } finally {
     loading.value = false;
   }
@@ -47,7 +68,6 @@ const submit = async () => {
 
 <template>
   <div class="login-container">
-    <!-- LEFT IMAGE -->
     <div class="login-image">
       <img :src="loginAdminImg" alt="Hotel" />
       <div class="image-overlay">
@@ -58,7 +78,6 @@ const submit = async () => {
       </div>
     </div>
 
-    <!-- RIGHT FORM -->
     <div class="login-right">
       <div class="top-actions">
         <ThemeToggle />
@@ -68,14 +87,13 @@ const submit = async () => {
       <div class="form-wrapper">
         <div class="form-content">
           <h2>{{ t("login.title") }}</h2>
-
           <el-form @submit.prevent="submit">
-            <el-tabs v-model="activeTab">
+            <el-tabs v-model="activeTab" @tab-change="handleTabChange">
               <el-tab-pane :label="t('login.email')" name="email">
-                <el-form-item>
+                <el-form-item :error="errors?.email && t(errors.email)">
                   <label>{{ t("login.email") }}</label>
                   <el-input
-                    v-model="username"
+                    v-model="data.email"
                     type="email"
                     :placeholder="t('login.placeholder_email')"
                     size="large"
@@ -85,11 +103,10 @@ const submit = async () => {
               </el-tab-pane>
 
               <el-tab-pane :label="t('login.phone')" name="phone">
-                <el-form-item>
+                <el-form-item :error="errors?.phone && t(errors.phone)">
                   <label>{{ t("login.phone") }}</label>
                   <el-input
-                    v-model="username"
-                    type="text"
+                    v-model="data.phone"
                     :placeholder="t('login.placeholder_phone')"
                     size="large"
                     clearable
@@ -98,10 +115,10 @@ const submit = async () => {
               </el-tab-pane>
             </el-tabs>
 
-            <el-form-item>
+            <el-form-item :error="errors?.password && t(errors.password)">
               <label>{{ t("login.password") }}</label>
               <el-input
-                v-model="password"
+                v-model="data.password"
                 type="password"
                 :placeholder="t('login.placeholder_pass')"
                 size="large"
@@ -123,7 +140,7 @@ const submit = async () => {
               :loading="loading"
               @click="submit"
             >
-              {{ t("common.login") }}
+              <span v-if="!loading">{{ t("common.login") }}</span>
             </el-button>
           </el-form>
 

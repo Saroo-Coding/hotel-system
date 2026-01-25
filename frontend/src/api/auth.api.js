@@ -1,13 +1,32 @@
-import { request } from './http'
+import { request } from "./http";
 
-export function loginApi(payload) {
-  const formData = new URLSearchParams()
-  formData.append('username', payload.username)
-  formData.append('password', payload.password)
+export async function loginApi(payload) {
+  const formData = new URLSearchParams();
 
-  return request('/auth/login', {
-    method: 'POST',
+  const email = payload.email?.trim();
+  const phone = payload.phone?.trim();
+
+  if (email) {
+    formData.append("email", email);
+  } else if (phone) {
+    formData.append("phone", phone);
+  }
+
+  formData.append("password", payload.password);
+
+  const res = await request("/auth/login", {
+    method: "POST",
     body: formData,
-    headers: {}
-  })
+    headers: {},
+    credentials: "include",
+  });
+
+  return res;
+}
+
+export async function logoutApi() {
+  return request("/auth/logout", {
+    method: "POST",
+    credentials: "include", //để nhận refresh_token cookie
+  });
 }

@@ -3,7 +3,7 @@ from pydantic import BaseModel, field_validator
 from typing import Optional
 
 from app.models.hotels import HotelStatus
-from app.core.validators import validate_not_empty, validate_phone_vn
+from app.core.validators import validate_not_empty, validate_phone
 
 class HotelStatus(str, Enum):
     ACTIVE = "ACTIVE"
@@ -45,7 +45,7 @@ class HotelUpdate(BaseModel):
         if v is None:
             return v
         validate_not_empty(v, "Phone")
-        return validate_phone_vn(v)
+        return validate_phone(v)
     
     @field_validator("description")
     @classmethod

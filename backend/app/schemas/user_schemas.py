@@ -1,7 +1,7 @@
 from pydantic import BaseModel, EmailStr, field_validator, model_validator
 from typing import Optional, Literal
 
-from app.core.validators import validate_not_empty, validate_password, validate_phone_vn
+from app.core.validators import validate_not_empty, validate_password, validate_phone
 from app.models.users import UserRole, UserStatus
 
 class AdminCreateUser(BaseModel):
@@ -23,7 +23,7 @@ class AdminCreateUser(BaseModel):
         if v is None:
             return v
         validate_not_empty(v, "Phone")
-        return validate_phone_vn(v)
+        return validate_phone(v)
 
     @model_validator(mode="after")
     def email_or_phone_required(self):
@@ -50,7 +50,7 @@ class StaffCreateCustomer(BaseModel):
         if v is None:
             return v
         validate_not_empty(v, "Phone")
-        return validate_phone_vn(v)
+        return validate_phone(v)
 
     @model_validator(mode="after")
     def email_or_phone_required(self):

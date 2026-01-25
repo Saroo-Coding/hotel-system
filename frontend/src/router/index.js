@@ -1,57 +1,80 @@
-import { createRouter, createWebHistory } from 'vue-router'
-import Login from '@/views/Login.vue'
-import Dashboard from '@/views/Dashboard.vue'
+import { createRouter, createWebHistory } from "vue-router";
+import { useAuthStore } from "@/stores/auth.store";
 
-const routes = [
-  { path: '/login', component: Login },
-  { path: '/', component: Dashboard }
-]
-
-export default createRouter({
+const router = createRouter({
   history: createWebHistory(),
-  routes
-})
+  routes: [
+    {
+      path: "/",
+      component: () => import("@/views/Dashboard.vue"),
+      meta: { roles: ["ADMIN", "STAFF"] },
+    },
+    {
+      path: "/login",
+      component: () => import("@/views/Login.vue"),
+      meta: { public: true },
+    },
+    {
+      path: "/admin",
+      meta: { roles: ["ADMIN"] },
+      children: [
+        // { path: "dashboard", component: () => import("@/pages/admin/Dashboard.vue") },
+        // { path: "users", component: () => import("@/pages/admin/Users.vue") },
+        // { path: "hotels", component: () => import("@/pages/admin/Hotels.vue") },
+        // { path: "hotels/:id", component: () => import("@/pages/admin/HotelDetail.vue") },
+        // { path: "rooms", component: () => import("@/pages/admin/Rooms.vue") },
+        // { path: "guests", component: () => import("@/pages/admin/Guests.vue") }
+      ],
+    },
+    {
+      path: "/staff",
+      meta: { roles: ["STAFF"] },
+      children: [
+        // { path: "dashboard", component: () => import("@/pages/staff/Dashboard.vue") },
+        // { path: "check-in", component: () => import("@/pages/staff/CheckIn.vue") },
+        // { path: "check-out", component: () => import("@/pages/staff/CheckOut.vue") },
+        // { path: "guests", component: () => import("@/pages/staff/Guests.vue") },
+        // { path: "rooms", component: () => import("@/pages/staff/Rooms.vue") }
+      ],
+    },
+    {
+      path: "/forbidden",
+      // component: () => import("@/pages/Forbidden.vue")
+    },
+  ],
+});
 
-// import { createRouter, createWebHistory } from 'vue-router'
-// import { useAuthStore } from '@/stores/auth.store'
+router.beforeEach(async (to, from, next) => {
+  const authStore = useAuthStore();
 
-// const router = createRouter({
-//   history: createWebHistory(),
-//   routes: [
-//     {
-//       path: '/login',
-//       component: () => import('@/pages/Login.vue'),
-//       meta: { public: true }
-//     },
+  if (to.path === "/login" && authStore.token) {
+    return next("/");
+  }
 
-//     {
-//       path: '/admin',
-//       meta: { requiresAuth: true, roles: ['ADMIN'] },
-//       children: [
-//         { path: 'dashboard', component: () => import('@/pages/admin/Dashboard.vue') },
-//         { path: 'users', component: () => import('@/pages/admin/Users.vue') },
-//         { path: 'hotels', component: () => import('@/pages/admin/Hotels.vue') },
-//         { path: 'hotels/:id', component: () => import('@/pages/admin/HotelDetail.vue') },
-//         { path: 'rooms', component: () => import('@/pages/admin/Rooms.vue') },
-//         { path: 'guests', component: () => import('@/pages/admin/Guests.vue') }
-//       ]
-//     },
+  if (to.meta.public) {
+    return next();
+  }
 
-//     {
-//       path: '/staff',
-//       meta: { requiresAuth: true, roles: ['STAFF'] },
-//       children: [
-//         { path: 'dashboard', component: () => import('@/pages/staff/Dashboard.vue') },
-//         { path: 'check-in', component: () => import('@/pages/staff/CheckIn.vue') },
-//         { path: 'check-out', component: () => import('@/pages/staff/CheckOut.vue') },
-//         { path: 'guests', component: () => import('@/pages/staff/Guests.vue') },
-//         { path: 'rooms', component: () => import('@/pages/staff/Rooms.vue') }
-//       ]
-//     },
+  if (!authStore.token) {
+    return next("/login");
+  }
 
-//     {
-//       path: '/forbidden',
-//       component: () => import('@/pages/Forbidden.vue')
-//     }
-//   ]
-// })
+  if (!authStore.initialized) {
+    try {
+      await authStore.fetchMe();
+    } catch (err) {
+      await authStore.logout();
+      return next("/login");
+    }
+  }
+
+  if (to.meta.roles) {
+    if (!to.meta.roles.includes(authStore.user.role)) {
+      return next("/forbidden");
+    }
+  }
+
+  next();
+});
+
+export default router;

@@ -1,5 +1,5 @@
-import { request } from './http'
+import { request } from "./http";
 
-export function meApi() {
-  return request('/user/me')
+export function userApi() {
+  return request("/users/me", { method: "GET" });
 }
