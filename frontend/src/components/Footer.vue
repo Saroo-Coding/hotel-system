@@ -18,7 +18,7 @@ const mapEmbedSrc =
           <p>{{ t("dashboard.footerTagline") }}</p>
           <p>{{ t("dashboard.footerAddress") }}</p>
           <p>{{ t("dashboard.footerPhone") }}</p>
-          <p>{{ t("dashboard.footerEmail") }}</p>
+          <p>Email: congdanh785@gmail.com</p>
         </section>
 
         <section class="footer-col">
@@ -62,7 +62,8 @@ const mapEmbedSrc =
 .dashboard-footer {
   margin-top: 24px;
   border-top: 1px solid var(--border-color);
-  background: var(--bg-secondary);
+  background: color-mix(in srgb, var(--bg-secondary) 90%, transparent);
+  backdrop-filter: blur(10px);
 }
 
 .footer-inner {
@@ -111,8 +112,9 @@ const mapEmbedSrc =
 
 .map-frame {
   overflow: hidden;
-  border-radius: 12px;
+  border-radius: 18px;
   border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-soft);
 }
 
 .footer-bottom {
@@ -143,4 +145,3 @@ const mapEmbedSrc =
   }
 }
 </style>
-

@@ -8,6 +8,7 @@
     "cancel": "Cancel",
     "required": "This field is required",
     "invalid_format": "Invalid format",
+    "returnBack": "Return back",
     "internal_server_error": "Something went wrong. Please try again later"
   },
   "error": {
@@ -90,6 +91,65 @@
     "footerHoursValue": "24/7 Customer Support",
     "footerMapTitle": "Find Us on Google Maps",
     "footerRights": "All rights reserved."
+  },
+  "room": {
+    "detailEyebrow": "Room Details",
+    "roomDetail": "Room Detail",
+    "roomTitle": "Room {roomNumber}",
+    "bedType": "Bed type",
+    "floor": "Floor",
+    "roomNumber": "Room number",
+    "status": "Status",
+    "description": "Description",
+    "galleryAlt": "Room image {index}",
+    "mockFallback": "Unable to load the room from API. Showing demo data instead.",
+    "bedTypeOptions": {
+      "DOUBLE": "Double",
+      "SINGLE": "Single"
+    },
+    "statusOptions": {
+      "AVAILABLE": "Available",
+      "MAINTENANCE": "Maintenance",
+      "BOOKED": "Booked"
+    }
+  },
+  "booking": {
+    "sectionTitle": "Booking now",
+    "sectionDescription": "Choose your dates to start a quick reservation flow for this room.",
+    "dateRange": "Check-in / Check-out",
+    "checkIn": "Check in",
+    "checkOut": "Check out",
+    "to": "to",
+    "bookNow": "Book Now",
+    "confirmBooking": "Confirm Booking",
+    "createAndBook": "Create & Book",
+    "unavailableTitle": "Booking unavailable",
+    "unavailableDescription": "This room is currently under maintenance, so booking is temporarily disabled.",
+    "dialog": {
+      "title": "Booking confirmation",
+      "question": "Have you booked a room with us before?",
+      "returningGuest": "Already booked",
+      "newGuest": "Not yet",
+      "selectGuest": "Select a guest from your previous booking history.",
+      "createGuest": "Enter your information to create a guest profile and continue."
+    },
+    "form": {
+      "name": "Guest name",
+      "phone": "Phone number",
+      "namePlaceholder": "Enter guest name",
+      "phonePlaceholder": "Enter phone number"
+    },
+    "validation": {
+      "dateRequired": "Please select check-in and check-out dates first",
+      "nameRequired": "Guest name is required",
+      "phoneRequired": "Phone number is required",
+      "phoneInvalid": "Phone number must contain 9 to 11 digits",
+      "selectGuest": "Please select a guest to continue"
+    },
+    "messages": {
+      "confirmedExisting": "Booking confirmed for {name} in room {room}.",
+      "createdAndBooked": "Guest {name} created and room {room} booked successfully."
+    }
   }
 }
 

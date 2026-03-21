@@ -45,13 +45,13 @@ function toggleTheme() {
 }
 
 .theme-switch {
-  --el-switch-on-color: #ffffff;
-  --el-switch-off-color: #1f2937;
+  --el-switch-on-color: var(--primary);
+  --el-switch-off-color: color-mix(in srgb, var(--text-secondary) 45%, var(--bg-secondary));
 }
 
 .icon {
   width: 16px;
   height: 16px;
-  color: #111827;
+  color: var(--text-primary);
 }
 </style>

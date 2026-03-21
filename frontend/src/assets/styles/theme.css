@@ -1,26 +1,57 @@
 :root {
-  --bg-primary: #f0f2f5;
-  --bg-secondary: #ffffff;
+  --bg-primary: #f7f3ee;
+  --bg-secondary: rgba(255, 255, 255, 0.92);
+  --bg-tertiary: rgba(255, 249, 242, 0.9);
 
-  --text-primary: #1f2937;
-  --text-secondary: #6b7280;
+  --text-primary: #1f2a37;
+  --text-secondary: #5f6f82;
 
-  --primary: #3b82f6;
-  --primary-hover: #2563eb;
+  --primary: #c97b36;
+  --primary-hover: #8f4f1d;
+  --primary-soft: rgba(201, 123, 54, 0.12);
 
-  --border-color: #e5e7eb;
+  --border-color: rgba(172, 119, 63, 0.18);
+  --shadow-soft: 0 18px 40px rgba(70, 44, 23, 0.08);
+  --shadow-strong: 0 24px 50px rgba(93, 58, 31, 0.14);
+
+  --page-gradient:
+    radial-gradient(circle at top left, rgba(201, 123, 54, 0.22), transparent 28%),
+    radial-gradient(circle at 85% 10%, rgba(239, 196, 135, 0.18), transparent 20%),
+    linear-gradient(180deg, #fff9f2 0%, #f6efe6 52%, #f7f3ee 100%);
+
+  --hero-surface:
+    linear-gradient(135deg, rgba(255, 248, 239, 0.96), rgba(255, 255, 255, 0.86)),
+    linear-gradient(135deg, rgba(201, 123, 54, 0.08), transparent);
+  --card-surface: rgba(255, 255, 255, 0.94);
+  --card-surface-muted: rgba(255, 250, 244, 0.9);
+  --image-overlay: linear-gradient(180deg, rgba(28, 20, 14, 0.04), rgba(28, 20, 14, 0.18));
 }
 
-/* ===== DARK MODE ===== */
 [data-theme='dark'] {
-  --bg-primary: #121212;
-  --bg-secondary: #020617;
+  --bg-primary: #12100e;
+  --bg-secondary: rgba(27, 22, 19, 0.92);
+  --bg-tertiary: rgba(38, 31, 27, 0.9);
 
-  --text-primary: #e5e7eb;
-  --text-secondary: #9ca3af;
+  --text-primary: #f3eadf;
+  --text-secondary: #c8b8a6;
 
-  --primary: #60a5fa;
-  --primary-hover: #3b82f6;
+  --primary: #e8a15f;
+  --primary-hover: #f4bc86;
+  --primary-soft: rgba(232, 161, 95, 0.14);
 
-  --border-color: #1e293b;
+  --border-color: rgba(232, 161, 95, 0.18);
+  --shadow-soft: 0 22px 44px rgba(0, 0, 0, 0.28);
+  --shadow-strong: 0 30px 56px rgba(0, 0, 0, 0.38);
+
+  --page-gradient:
+    radial-gradient(circle at top left, rgba(232, 161, 95, 0.14), transparent 28%),
+    radial-gradient(circle at 85% 10%, rgba(106, 64, 36, 0.24), transparent 22%),
+    linear-gradient(180deg, #14110f 0%, #181411 48%, #12100e 100%);
+
+  --hero-surface:
+    linear-gradient(135deg, rgba(42, 33, 28, 0.96), rgba(23, 19, 17, 0.92)),
+    linear-gradient(135deg, rgba(232, 161, 95, 0.08), transparent);
+  --card-surface: rgba(26, 22, 19, 0.94);
+  --card-surface-muted: rgba(35, 29, 25, 0.9);
+  --image-overlay: linear-gradient(180deg, rgba(10, 8, 7, 0.08), rgba(10, 8, 7, 0.32));
 }

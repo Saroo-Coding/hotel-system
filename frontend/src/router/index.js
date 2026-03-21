@@ -10,6 +10,11 @@ const router = createRouter({
       meta: { public: true },
     },
     {
+      path: "/rooms/:id",
+      component: () => import("@/views/RoomDetail.vue"),
+      meta: { public: true },
+    },
+    {
       path: "/login",
       component: () => import("@/views/Login.vue"),
       meta: { public: true },

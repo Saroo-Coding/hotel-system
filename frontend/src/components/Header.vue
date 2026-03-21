@@ -16,7 +16,7 @@ const { t } = useI18n();
           mode="horizontal"
           default-active="home"
           class="main-menu"
-          ellipsis="false"
+          :ellipsis="false"
         >
           <el-menu-item index="home">{{ t("dashboard.home") }}</el-menu-item>
           <el-menu-item index="rooms">{{ t("dashboard.room") }}</el-menu-item>
@@ -39,7 +39,9 @@ const { t } = useI18n();
   height: 60px;
   padding: 0;
   border-bottom: 1px solid var(--border-color);
-  background: var(--bg-secondary);
+  background: color-mix(in srgb, var(--bg-secondary) 88%, transparent);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 10px 24px color-mix(in srgb, var(--primary) 8%, transparent);
 }
 
 .header-inner {
@@ -69,6 +71,14 @@ const { t } = useI18n();
 .main-menu {
   border-bottom: none;
   background: transparent;
+}
+
+.main-menu :deep(.el-menu-item) {
+  color: var(--text-secondary);
+}
+
+.main-menu :deep(.el-menu-item.is-active) {
+  color: var(--primary);
 }
 
 .top-actions {

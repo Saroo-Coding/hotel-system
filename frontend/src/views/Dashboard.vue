@@ -1,6 +1,7 @@
 ﻿<script setup>
 import { onMounted, reactive, ref } from "vue";
 import { useI18n } from "vue-i18n";
+import { useRouter } from "vue-router";
 
 import Header from "@/components/Header.vue";
 import Footer from "@/components/Footer.vue";
@@ -10,6 +11,7 @@ import { ElMessage } from "element-plus";
 import { Calendar, OfficeBuilding } from "@element-plus/icons-vue";
 
 const { t } = useI18n();
+const router = useRouter();
 
 const allRooms = ref([]);
 const searchForm = reactive({
@@ -37,20 +39,10 @@ const loadRooms = async () => {
 const handleSearch = () => {
   ElMessage.success(
     t("dashboard.foundMessage", {
-      count: filteredRooms.value.length,
+      count: allRooms.value.length,
       guests: searchForm.guests,
     }),
   );
-};
-
-const handleBook = (room) => {
-  ElMessage({
-    type: "success",
-    message: t("dashboard.bookedMessage", {
-      room: room.room_number,
-      hotel: room.hotel || t("dashboard.logo"),
-    }),
-  });
 };
 
 onMounted(() => {
@@ -154,7 +146,7 @@ onMounted(() => {
               <el-button
                 type="primary"
                 class="book-btn"
-                @click="handleBook(room)"
+                @click="router.push(`/rooms/${room.id}`)"
               >
                 {{ t("dashboard.bookNow") }}
               </el-button>
@@ -176,16 +168,12 @@ onMounted(() => {
 <style scoped>
 .hotel-page {
   min-height: 100vh;
-  background: radial-gradient(
-    circle at 20% 0%,
-    rgba(204, 234, 255, 0.2) 0%,
-    var(--bg-primary) 55%,
-    var(--bg-primary) 100%
-  );
+  background: var(--page-gradient);
   color: var(--text-primary);
 }
 
 .hero-wrap {
+  position: relative;
   padding: 62px 16px 24px;
 }
 
@@ -193,6 +181,11 @@ onMounted(() => {
   max-width: 960px;
   margin: 0 auto;
   text-align: center;
+  padding: 30px 24px;
+  border: 1px solid var(--border-color);
+  border-radius: 28px;
+  background: var(--hero-surface);
+  box-shadow: var(--shadow-strong);
 }
 
 .hero-eyebrow {
@@ -200,11 +193,12 @@ onMounted(() => {
   margin: 0 0 10px;
   padding: 6px 12px;
   border-radius: 999px;
-  background: rgba(59, 130, 246, 0.15);
+  background: var(--primary-soft);
   color: var(--primary);
   font-weight: 700;
   font-size: 12px;
   letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
 .hero-content h1 {
@@ -223,9 +217,10 @@ onMounted(() => {
 .search-card {
   margin: 28px auto 0;
   max-width: 980px;
-  border-radius: 16px;
+  border-radius: 22px;
   border: 1px solid var(--border-color);
-  background: var(--bg-secondary);
+  background: var(--card-surface);
+  box-shadow: var(--shadow-soft);
 }
 
 .search-grid {
@@ -246,16 +241,34 @@ onMounted(() => {
   color: var(--text-secondary);
 }
 
+.search-card :deep(.el-input__wrapper),
+.search-card :deep(.el-select__wrapper),
+.search-card :deep(.el-range-editor.el-input__wrapper),
+.search-card :deep(.el-input-number),
+.search-card :deep(.el-input-number__decrease),
+.search-card :deep(.el-input-number__increase) {
+  background: var(--bg-tertiary);
+  box-shadow: 0 0 0 1px var(--border-color) inset;
+  color: var(--text-primary);
+}
+
 .search-button {
-  height: 40px;
-  border-radius: 10px;
+  height: 44px;
+  border-radius: 14px;
   padding: 0 20px;
   font-weight: 700;
+  border: none;
+  background: linear-gradient(135deg, var(--primary), var(--primary-hover));
+  box-shadow: 0 14px 24px color-mix(in srgb, var(--primary) 28%, transparent);
+}
+
+.search-button:hover {
+  filter: brightness(1.04);
 }
 
 .room-section {
   max-width: 1120px;
-  margin: 6px auto 0;
+  margin: 18px auto 0;
   padding: 0 16px 36px;
 }
 
@@ -279,19 +292,20 @@ onMounted(() => {
 }
 
 .room-card {
-  border-radius: 14px;
+  border-radius: 22px;
   border: 1px solid var(--border-color);
   overflow: hidden;
   margin-bottom: 16px;
   transition:
     transform 0.25s ease,
     box-shadow 0.25s ease;
-  background: var(--bg-secondary);
+  background: var(--card-surface);
+  box-shadow: var(--shadow-soft);
 }
 
 .room-card:hover {
   transform: translateY(-6px);
-  box-shadow: 0 12px 24px rgba(18, 42, 79, 0.16);
+  box-shadow: var(--shadow-strong);
 }
 
 .room-image {
@@ -301,7 +315,7 @@ onMounted(() => {
 }
 
 .room-body {
-  padding: 14px;
+  padding: 18px;
 }
 
 .room-body h3 {
@@ -338,8 +352,8 @@ onMounted(() => {
   border-radius: 999px;
   font-weight: 700;
   padding: 10px 18px;
-  background: linear-gradient(135deg, #0ea5e9, #2563eb);
-  box-shadow: 0 8px 16px rgba(37, 99, 235, 0.28);
+  background: linear-gradient(135deg, var(--primary), var(--primary-hover));
+  box-shadow: 0 12px 22px color-mix(in srgb, var(--primary) 26%, transparent);
   transition:
     transform 0.2s ease,
     box-shadow 0.2s ease,
@@ -349,7 +363,16 @@ onMounted(() => {
 .book-btn:hover {
   transform: translateY(-2px);
   filter: brightness(1.03);
-  box-shadow: 0 12px 20px rgba(37, 99, 235, 0.35);
+  box-shadow: 0 16px 26px color-mix(in srgb, var(--primary) 32%, transparent);
+}
+
+.room-card :deep(.el-card__body),
+.search-card :deep(.el-card__body) {
+  background: transparent;
+}
+
+.hotel-page :deep(.el-empty__description p) {
+  color: var(--text-secondary);
 }
 
 @media (max-width: 980px) {
@@ -371,6 +394,10 @@ onMounted(() => {
 @media (max-width: 640px) {
   .hero-wrap {
     padding-top: 38px;
+  }
+
+  .hero-content {
+    padding: 22px 18px;
   }
 
   .section-head {

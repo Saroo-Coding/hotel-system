@@ -8,6 +8,7 @@
     "cancel": "Hủy",
     "required": "Trường này là bắt buộc",
     "invalid_format": "Định dạng không hợp lệ",
+    "returnBack": "Quay lại",
     "internal_server_error": "Đã xảy ra lỗi. Vui lòng thử lại sau"
   },
   "error": {
@@ -60,7 +61,7 @@
     "room": "Phòng",
     "eyebrow": "WEBSITE ĐẶT PHÒNG KHÁCH SẠN",
     "title": "Tìm phòng cho chuyến đi của bạn",
-    "subtext":"Chọn ngày nhận, ngày trả và số lượng khách để tìm phòng phù hợp.",
+    "subtext": "Chọn ngày nhận, ngày trả và số lượng khách để tìm phòng phù hợp.",
     "dateLabel": "Ngày nhận phòng - Ngày trả phòng",
     "to": "đến",
     "dateStart": "Ngày nhận",
@@ -85,10 +86,69 @@
     "footerAddress": "Địa chỉ: 12 Nguyễn Huệ, Quận 1, TP. Hồ Chí Minh",
     "footerPhone": "Hotline: (+84) 919 6422 79",
     "footerEmail": "Email: congdanh785@gmail.com",
-    "footerQuickLinks": "Liên kết nhanh",
+    "footerQuickLinks": "Liên kết",
     "footerHoursTitle": "Giờ hoạt động",
     "footerHoursValue": "Hỗ trợ khách hàng 24/7",
     "footerMapTitle": "Vị trí trên Google Maps",
     "footerRights": "Bảo lưu mọi quyền."
+  },
+  "room": {
+    "detailEyebrow": "Chi tiết phòng",
+    "roomDetail": "Thông tin phòng",
+    "roomTitle": "Phòng {roomNumber}",
+    "bedType": "Loại giường",
+    "floor": "Tầng",
+    "roomNumber": "Số phòng",
+    "status": "Trạng thái",
+    "description": "Mô tả",
+    "galleryAlt": "Ảnh phòng {index}",
+    "mockFallback": "Không tải được dữ liệu phòng từ API. Đang hiển thị dữ liệu demo.",
+    "bedTypeOptions": {
+      "DOUBLE": "Giường đôi",
+      "SINGLE": "Giường đơn"
+    },
+    "statusOptions": {
+      "AVAILABLE": "Còn trống",
+      "MAINTENANCE": "Bảo trì",
+      "BOOKED": "Đã đặt"
+    }
+  },
+  "booking": {
+    "sectionTitle": "Đặt phòng ngay",
+    "sectionDescription": "Chọn ngày để bắt đầu quy trình đặt phòng nhanh cho phòng này.",
+    "dateRange": "Ngày nhận / Ngày trả",
+    "checkIn": "Ngày nhận phòng",
+    "checkOut": "Ngày trả phòng",
+    "to": "đến",
+    "bookNow": "Đặt ngay",
+    "confirmBooking": "Xác nhận đặt phòng",
+    "createAndBook": "Tạo khách và đặt",
+    "unavailableTitle": "Tạm không thể đặt",
+    "unavailableDescription": "Phòng này đang trong trạng thái bảo trì nên tạm thời không thể đặt.",
+    "dialog": {
+      "title": "Xác nhận đặt phòng",
+      "question": "Bạn đã từng đặt phòng ở đây chưa?",
+      "returningGuest": "Đã từng",
+      "newGuest": "Chưa từng",
+      "selectGuest": "Chọn khách trong danh sách đặt phòng trước đó.",
+      "createGuest": "Nhập thông tin để tạo hồ sơ khách và tiếp tục."
+    },
+    "form": {
+      "name": "Tên khách hàng",
+      "phone": "Số điện thoại",
+      "namePlaceholder": "Nhập tên khách hàng",
+      "phonePlaceholder": "Nhập số điện thoại"
+    },
+    "validation": {
+      "dateRequired": "Vui lòng chọn ngày nhận và ngày trả phòng trước",
+      "nameRequired": "Vui lòng nhập tên khách hàng",
+      "phoneRequired": "Vui lòng nhập số điện thoại",
+      "phoneInvalid": "Số điện thoại phải có từ 9 đến 11 chữ số",
+      "selectGuest": "Vui lòng chọn khách hàng để tiếp tục"
+    },
+    "messages": {
+      "confirmedExisting": "Đã xác nhận đặt phòng {room} cho {name}.",
+      "createdAndBooked": "Đã tạo khách {name} và đặt phòng {room} thành công."
+    }
   }
 }
