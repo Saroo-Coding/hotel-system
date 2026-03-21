@@ -80,6 +80,15 @@
     "bookNow": "Đặt ngay",
     "empty": "Không có phòng phù hợp với số lượng khách. Vui lòng thử lại.",
     "foundMessage": "Tìm thấy {count} phòng cho {guests} khách.",
-    "bookedMessage": "Đặt phòng: {room} tại {hotel}"
+    "bookedMessage": "Đặt phòng: {room} tại {hotel}",
+    "footerTagline": "Lưu trú thoải mái, giá rõ ràng và đặt phòng nhanh trong một nơi.",
+    "footerAddress": "Địa chỉ: 12 Nguyễn Huệ, Quận 1, TP. Hồ Chí Minh",
+    "footerPhone": "Hotline: (+84) 919 6422 79",
+    "footerEmail": "Email: congdanh785@gmail.com",
+    "footerQuickLinks": "Liên kết nhanh",
+    "footerHoursTitle": "Giờ hoạt động",
+    "footerHoursValue": "Hỗ trợ khách hàng 24/7",
+    "footerMapTitle": "Vị trí trên Google Maps",
+    "footerRights": "Bảo lưu mọi quyền."
   }
 }

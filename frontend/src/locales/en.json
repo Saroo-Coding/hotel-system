@@ -19,7 +19,7 @@
   },
   "auth": {
     "sologan_1": "Refined, luxurious, and fully equipped",
-    "sologan_2": "Comfortable, clean, friendly - â€‹â€‹three things we are committed to.",
+    "sologan_2": "Comfortable, clean, friendly - three things we are committed to.",
     "title_login": "Welcome to Saroo Hotel!",
     "title_register": "Create your account",
     "email": "Email address",
@@ -80,7 +80,16 @@
     "bookNow": "Book Now",
     "empty": "No room matches your guest count. Try fewer guests.",
     "foundMessage": "Found {count} room(s) for {guests} guest(s).",
-    "bookedMessage": "Booking: {room} at {hotel}"
+    "bookedMessage": "Booking: {room} at {hotel}",
+    "footerTagline": "Comfortable stays, clear pricing, and easy booking in one place.",
+    "footerAddress": "Address: 12 Nguyen Hue Street, District 1, Ho Chi Minh City",
+    "footerPhone": "Hotline: (+84) 919 6422 79",
+    "footerEmail": "Email: congdanh785@gmail.com",
+    "footerQuickLinks": "Quick Links",
+    "footerHoursTitle": "Working Hours",
+    "footerHoursValue": "24/7 Customer Support",
+    "footerMapTitle": "Find Us on Google Maps",
+    "footerRights": "All rights reserved."
   }
 }
 
