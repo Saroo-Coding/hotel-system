@@ -47,7 +47,10 @@ def create_guest(
         return {
             "success": True,
             "code": status.HTTP_200_OK,
-            "message": "Success"
+            "message": "Success",
+            "data": {
+                "id": str(guest.id)
+            }
         }
     except Exception as e:
         db.rollback()
@@ -260,4 +263,61 @@ def restore_guest(
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Internal server error"
+        )
+
+@router.get("/search")
+def search_guest(
+    keyword: str = Query(..., min_length=1),
+    db: Session = Depends(get_db),
+):
+    try:
+        keyword = keyword.strip()
+        if not keyword:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST, 
+                detail="Keyword cannot be empty"
+            )
+
+        keyword_like = f"%{keyword}%"
+        guest = (
+            db.query(Guest)
+            .filter(
+                or_(
+                    Guest.id_number.ilike(keyword_like),
+                    Guest.email.ilike(keyword_like),
+                    Guest.phone.ilike(keyword_like)
+                )
+            ).first()
+        )
+
+        if not guest:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND, 
+                detail="Guest not found"
+            )
+
+        return {
+            "success": True,
+            "code": status.HTTP_200_OK,
+            "message": "Success",
+            "data": {
+                "id": str(guest.id),
+                "user_id": guest.user_id,
+                "full_name": guest.full_name,
+                "id_type": guest.id_type,
+                "id_number": guest.id_number,
+                "date_of_birth": guest.date_of_birth,
+                "gender": guest.gender,
+                "nationality": guest.nationality,
+                "phone": guest.phone,
+                "email": guest.email,
+                "created_at": guest.created_at.strftime("%d/%m/%Y %H:%M")
+            }
+        }
+
+    except Exception as e:
+        logger.exception("Unexpected error in search_guest. ERROR: " + str(e))
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Internal Server Error"
         )

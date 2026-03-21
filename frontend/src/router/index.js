@@ -7,7 +7,7 @@ const router = createRouter({
     {
       path: "/",
       component: () => import("@/views/Dashboard.vue"),
-      meta: { roles: ["ADMIN", "STAFF"] },
+      meta: { public: true },
     },
     {
       path: "/login",

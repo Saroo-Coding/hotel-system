@@ -123,6 +123,7 @@ CREATE TABLE IF NOT EXISTS rooms (
     base_price NUMERIC(15,0) NOT NULL CHECK (base_price >= 0),
 
     status room_status DEFAULT 'AVAILABLE',
+    image TEXT,
     description TEXT,
 
     created_at TIMESTAMP WITH TIME ZONE DEFAULT now(),

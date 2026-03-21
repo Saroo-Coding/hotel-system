@@ -1,5 +1,6 @@
-{
+﻿{
   "common": {
+    "name_hotel": "Saroo Hotel",
     "login": "Login",
     "register": "Register",
     "logout": "Logout",
@@ -18,7 +19,7 @@
   },
   "auth": {
     "sologan_1": "Refined, luxurious, and fully equipped",
-    "sologan_2": "Comfortable, clean, friendly - ​​three things we are committed to.",
+    "sologan_2": "Comfortable, clean, friendly - â€‹â€‹three things we are committed to.",
     "title_login": "Welcome to Saroo Hotel!",
     "title_register": "Create your account",
     "email": "Email address",
@@ -52,5 +53,34 @@
     "error_password_special": "Password must contain at least one special character",
     "error_confirm_password_required": "Confirm password is required",
     "error_password_mismatch": "Passwords do not match"
+  },
+  "dashboard": {
+    "logo": "Saroo Hotel",
+    "home": "Home",
+    "room": "Room",
+    "eyebrow": "SIMPLE HOTEL BOOKING SPA",
+    "title": "Find the right room for your trip",
+    "subtext":"Select check-in/check-out dates and guest count to find matching rooms.",
+    "dateLabel": "Check in - Check out",
+    "to": "to",
+    "dateStart": "Check in",
+    "dateEnd": "Check out",
+    "guests": "Guests",
+    "search": "Search",
+    "availableRooms": "Available Rooms",
+    "showing": "Showing",
+    "roomUnit": "room(s)",
+    "floor": "Floor",
+    "bedType": "Bed type",
+    "allBeds": "All bed types",
+    "double": "Double",
+    "single": "Single",
+    "guestUnit": "guest(s)",
+    "night": "/ night",
+    "bookNow": "Book Now",
+    "empty": "No room matches your guest count. Try fewer guests.",
+    "foundMessage": "Found {count} room(s) for {guests} guest(s).",
+    "bookedMessage": "Booking: {room} at {hotel}"
   }
 }
+

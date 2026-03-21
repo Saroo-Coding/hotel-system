@@ -25,5 +25,6 @@ class Room(Base):
     base_price = Column(Numeric(15, 0), nullable=False)
     status = Column(Enum(RoomStatus), nullable=False, default=RoomStatus.AVAILABLE)
     description = Column(Text)
+    image = Column(Text)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), server_default=func.now())

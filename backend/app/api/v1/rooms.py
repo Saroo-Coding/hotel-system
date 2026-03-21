@@ -75,7 +75,8 @@ def get_list_rooms(
             "bed_type": room.bed_type.value,
             "base_price": int(room.base_price),
             "status": room.status.value,
-            "description": room.description
+            "description": room.description,
+            "image": room.image
         }
         for room in rooms
     ]
@@ -113,6 +114,7 @@ def get_room_detail(
                 "base_price": room.base_price,
                 "status": room.status.value,
                 "description": room.description,
+                "image": room.image,
                 "created_at": room.created_at.strftime("%d/%m/%Y %H:%M"),
                 "updated_at": room.updated_at.strftime("%d/%m/%Y %H:%M")
             }

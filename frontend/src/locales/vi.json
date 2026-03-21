@@ -1,5 +1,6 @@
 {
   "common": {
+    "name_hotel": "Saroo Hotel",
     "login": "Đăng nhập",
     "register": "Đăng ký",
     "logout": "Đăng xuất",
@@ -52,5 +53,33 @@
     "error_password_special": "Mật khẩu phải có ít nhất một ký tự đặc biệt",
     "error_confirm_password_required": "Xác nhận mật khẩu là bắt buộc",
     "error_password_mismatch": "Mật khẩu xác nhận không khớp"
+  },
+  "dashboard": {
+    "logo": "Saroo Hotel",
+    "home": "Trang chủ",
+    "room": "Phòng",
+    "eyebrow": "WEBSITE ĐẶT PHÒNG KHÁCH SẠN",
+    "title": "Tìm phòng cho chuyến đi của bạn",
+    "subtext":"Chọn ngày nhận, ngày trả và số lượng khách để tìm phòng phù hợp.",
+    "dateLabel": "Ngày nhận phòng - Ngày trả phòng",
+    "to": "đến",
+    "dateStart": "Ngày nhận",
+    "dateEnd": "Ngày trả",
+    "guests": "Số khách",
+    "search": "Tìm phòng",
+    "availableRooms": "Danh sách phòng",
+    "showing": "Đang hiển thị",
+    "roomUnit": "phòng",
+    "floor": "Tầng",
+    "bedType": "Loại giường",
+    "allBeds": "Tất cả loại giường",
+    "double": "Đôi",
+    "single": "Đơn",
+    "guestUnit": "khách",
+    "night": "/ đêm",
+    "bookNow": "Đặt ngay",
+    "empty": "Không có phòng phù hợp với số lượng khách. Vui lòng thử lại.",
+    "foundMessage": "Tìm thấy {count} phòng cho {guests} khách.",
+    "bookedMessage": "Đặt phòng: {room} tại {hotel}"
   }
 }
