@@ -72,8 +72,8 @@ const submit = async () => {
       <img :src="loginAdminImg" alt="Hotel" />
       <div class="image-overlay">
         <div class="image-text">
-          <h2>{{ t("login.sologan_1") }}</h2>
-          <p>{{ t("login.sologan_2") }}</p>
+          <h2>{{ t("auth.sologan_1") }}</h2>
+          <p>{{ t("auth.sologan_2") }}</p>
         </div>
       </div>
     </div>
@@ -86,28 +86,28 @@ const submit = async () => {
 
       <div class="form-wrapper">
         <div class="form-content">
-          <h2>{{ t("login.title") }}</h2>
+          <h2>{{ t("auth.title_login") }}</h2>
           <el-form @submit.prevent="submit">
             <el-tabs v-model="activeTab" @tab-change="handleTabChange">
-              <el-tab-pane :label="t('login.email')" name="email">
+              <el-tab-pane :label="t('auth.email')" name="email">
                 <el-form-item :error="errors?.email && t(errors.email)">
-                  <label>{{ t("login.email") }}</label>
+                  <label>{{ t("auth.email") }}</label>
                   <el-input
                     v-model="data.email"
                     type="email"
-                    :placeholder="t('login.placeholder_email')"
+                    :placeholder="t('auth.placeholder_email')"
                     size="large"
                     clearable
                   />
                 </el-form-item>
               </el-tab-pane>
 
-              <el-tab-pane :label="t('login.phone')" name="phone">
+              <el-tab-pane :label="t('auth.phone')" name="phone">
                 <el-form-item :error="errors?.phone && t(errors.phone)">
-                  <label>{{ t("login.phone") }}</label>
+                  <label>{{ t("auth.phone") }}</label>
                   <el-input
                     v-model="data.phone"
-                    :placeholder="t('login.placeholder_phone')"
+                    :placeholder="t('auth.placeholder_phone')"
                     size="large"
                     clearable
                   />
@@ -116,11 +116,11 @@ const submit = async () => {
             </el-tabs>
 
             <el-form-item :error="errors?.password && t(errors.password)">
-              <label>{{ t("login.password") }}</label>
+              <label>{{ t("auth.password") }}</label>
               <el-input
                 v-model="data.password"
                 type="password"
-                :placeholder="t('login.placeholder_pass')"
+                :placeholder="t('auth.placeholder_pass')"
                 size="large"
                 show-password
               />
@@ -128,9 +128,9 @@ const submit = async () => {
 
             <div class="form-row">
               <el-checkbox v-model="rememberMe">
-                {{ t("login.remember") }}
+                {{ t("auth.remember") }}
               </el-checkbox>
-              <a class="forgot">{{ t("login.forgot_pass") }}</a>
+              <a class="forgot">{{ t("auth.forgot_pass") }}</a>
             </div>
 
             <el-button
@@ -144,7 +144,7 @@ const submit = async () => {
             </el-button>
           </el-form>
 
-          <el-divider>{{ t("login.or_login") }}</el-divider>
+          <el-divider>{{ t("auth.or_login") }}</el-divider>
 
           <div class="social-login">
             <el-button class="google-btn" plain>
@@ -166,8 +166,8 @@ const submit = async () => {
           </div>
 
           <div class="register-link">
-            {{ t("login.no_account") }}
-            <a>{{ t("common.register") }}</a>
+            {{ t("auth.no_account") }}
+            <a @click.prevent="router.push('/register')">{{ t("common.register") }}</a>
           </div>
         </div>
       </div>
@@ -280,7 +280,7 @@ const submit = async () => {
 }
 .register-link a {
   color: #3b82f6;
-  text-decoration: none;
+  cursor: pointer;
   font-weight: 500;
 }
 

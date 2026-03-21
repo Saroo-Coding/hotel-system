@@ -24,10 +24,6 @@ def validate_email(email: str) -> bool:
     ''' Validate email format '''
     return bool(re.fullmatch(r"[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}", email))
 
-def validate_username(username: str) -> bool:
-    ''' Validate username format '''
-    return bool(re.fullmatch(r"[a-zA-Z0-9_]{4,20}", username))
-
 def validate_phone(phone: str) -> bool:
     ''' Validate Vietnamese phone number '''
     return bool(re.fullmatch(r"0[3|5|7|8|9][0-9]{8}", phone))

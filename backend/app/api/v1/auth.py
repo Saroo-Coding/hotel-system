@@ -9,7 +9,7 @@ from sqlalchemy.orm import Session
 from app.core.database import SessionLocal
 from app.core.security import verify_password, create_access_token, hash_password
 from app.core.config import settings
-from app.core.validators import validate_email, validate_phone
+from app.core.validators import validate_email, validate_phone, validate_password, validate_full_name
 from app.schemas.auth_schemas import RegisterRequest
 from app.api.deps import get_current_user
 from app.models.users import User, UserRole, UserStatus
@@ -25,43 +25,96 @@ def get_db():
     finally:
         db.close()
 
+
 @router.post("/register")
 def register_customer(
-    payload: RegisterRequest,
+    email: str | None = Form(None),
+    phone: str | None = Form(None),
+    full_name: str | None = Form(None),
+    password: str | None = Form(None),
+    confirm_password: str | None = Form(None),
     db: Session = Depends(get_db),
 ):
+    errors = {}
+    email = email.strip() if email else None
+    phone = phone.strip() if phone else None
+    full_name = full_name.strip() if full_name else None
+    password = password.strip() if password else None
+    confirm_password = confirm_password.strip() if confirm_password else None
+
+    if not email and not phone:
+        errors["email"] = "auth.error_email_required"
+        errors["phone"] = "auth.error_phone_required"
+
+    if email and phone:
+        return JSONResponse(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            content={
+                "success": False,
+                "error": {
+                    "email": "auth.error_only_one_identifier",
+                    "phone": "auth.error_only_one_identifier",
+                },
+            },
+        )
+
+    if email and not validate_email(email):
+        errors["email"] = "auth.error_invalid_email"
+
+    if phone and not validate_phone(phone):
+        errors["phone"] = "auth.error_invalid_phone"
+
+    if not full_name:
+        errors["full_name"] = "auth.error_full_name_required"
+    elif full_name_error := validate_full_name(full_name):
+        errors["full_name"] = f"auth.{full_name_error}"
+
+    if not password:
+        errors["password"] = "auth.error_password_required"
+    elif password_error := validate_password(password):
+        errors["password"] = f"auth.{password_error}"
+
+    if not confirm_password:
+        errors["confirm_password"] = "auth.error_confirm_password_required"
+
+    if password and confirm_password and password != confirm_password:
+        errors["confirm_password"] = "auth.error_passwords_do_not_match"
+
+    if email and db.query(User).filter(User.email == email).first():
+        errors["email"] = "auth.error_email_exists"
+
+    if phone and db.query(User).filter(User.phone == phone).first():
+        errors["phone"] = "auth.error_phone_exists"
+
+    if errors:
+        return JSONResponse(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            content={
+                "success": False,
+                "error": errors
+            }
+        )
+
     try:
-        if payload.email:
-            if db.query(User).filter(User.email == payload.email).first():
-                raise HTTPException(
-                    status_code=status.HTTP_400_BAD_REQUEST, 
-                    detail="Email already exists"
-                )
-
-        if payload.phone:
-            if db.query(User).filter(User.phone == payload.phone).first():
-                raise HTTPException(
-                    status_code=status.HTTP_400_BAD_REQUEST,
-                    detail="Phone already exists"
-                )
-
         user = User(
-            email=payload.email,
-            phone=payload.phone,
-            password_hash=hash_password(payload.password),
-            full_name=UserRole.CUSTOMER.value,
-            role=UserRole.CUSTOMER
+            email=email,
+            phone=phone,
+            password_hash=hash_password(password),
+            full_name=full_name
         )
 
         db.add(user)
         db.commit()
-        db.refresh(user) 
+        db.refresh(user)
 
-        return {
-            "email": user.email,
-            "phone": user.phone
-        }
-    
+        return JSONResponse(
+            status_code=status.HTTP_201_CREATED,
+            content={
+                "success": True,
+                "message": "auth.register.success",
+            }
+        )
+
     except Exception as e:
         db.rollback()
         logger.exception("Unexpected error in register_customer. ERROR: " + str(e))
@@ -84,8 +137,8 @@ def login(
     password = password.strip() if password else None
 
     if not email and not phone:
-        errors["email"] = "login.error_email_required"
-        errors["phone"] = "login.error_phone_required"
+        errors["email"] = "auth.error_email_required"
+        errors["phone"] = "auth.error_phone_required"
 
     if email and phone:
         return JSONResponse(
@@ -93,20 +146,20 @@ def login(
             content={
                 "success": False,
                 "error": {
-                    "email": "login.error_only_one_identifier",
-                    "phone": "login.error_only_one_identifier",
+                    "email": "auth.error_only_one_identifier",
+                    "phone": "auth.error_only_one_identifier",
                 },
             },
         )
 
     if email and not validate_email(email):
-        errors["email"] = "login.error_invalid_email"
+        errors["email"] = "auth.error_invalid_email"
 
     if phone and not validate_phone(phone):
-        errors["phone"] = "login.error_invalid_phone"
+        errors["phone"] = "auth.error_invalid_phone"
 
     if not password:
-        errors["password"] = "login.error_password_required"
+        errors["password"] = "auth.error_password_required"
 
     if errors:
         return JSONResponse(

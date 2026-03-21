@@ -14,16 +14,44 @@ function toggleTheme() {
 </script>
 
 <template>
-  <el-switch
-    :model-value="isDark"
-    @change="toggleTheme"
-    style="--el-switch-on-color: #a8abb2; --el-switch-off-color: #141414"
-  >
-    <template #active-action>
-      <Sunny color="#141414" />
-    </template>
-    <template #inactive-action>
-      <Moon color="#141414" />
-    </template>
-  </el-switch>
+  <div class="theme-toggle-wrapper">
+    <el-switch
+      class="theme-switch"
+      :model-value="isDark"
+      @change="toggleTheme"
+      inline-prompt
+    >
+      <!-- DARK MODE -->
+      <template #active-action>
+        <Moon class="icon moon" />
+      </template>
+
+      <!-- LIGHT MODE -->
+      <template #inactive-action>
+        <Sunny class="icon sun" />
+      </template>
+    </el-switch>
+  </div>
 </template>
+
+<style scoped>
+.theme-toggle-wrapper {
+  display: inline-flex;
+  transition: transform 0.15s ease;
+}
+
+.theme-toggle-wrapper:hover {
+  transform: scale(1.08);
+}
+
+.theme-switch {
+  --el-switch-on-color: #ffffff;
+  --el-switch-off-color: #1f2937;
+}
+
+.icon {
+  width: 16px;
+  height: 16px;
+  color: #111827;
+}
+</style>
