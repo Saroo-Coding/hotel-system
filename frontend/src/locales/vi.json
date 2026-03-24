@@ -1,4 +1,4 @@
-{
+﻿{
   "common": {
     "name_hotel": "Saroo Hotel",
     "login": "Đăng nhập",
@@ -111,6 +111,9 @@
       "AVAILABLE": "Còn trống",
       "MAINTENANCE": "Bảo trì",
       "BOOKED": "Đã đặt"
+    },
+    "messages": {
+      "notFound": "Không tìm thấy phòng"
     }
   },
   "booking": {
@@ -120,6 +123,7 @@
     "checkIn": "Ngày nhận phòng",
     "checkOut": "Ngày trả phòng",
     "to": "đến",
+    "book": "Đặt phòng",
     "bookNow": "Đặt ngay",
     "confirmBooking": "Xác nhận đặt phòng",
     "createAndBook": "Tạo khách và đặt",
@@ -127,28 +131,76 @@
     "unavailableDescription": "Phòng này đang trong trạng thái bảo trì nên tạm thời không thể đặt.",
     "dialog": {
       "title": "Xác nhận đặt phòng",
-      "question": "Bạn đã từng đặt phòng ở đây chưa?",
+      "question": "Bạn đã từng đặt phòng chưa? Hãy tìm theo CCCD hoặc số điện thoại.",
       "returningGuest": "Đã từng",
       "newGuest": "Chưa từng",
-      "selectGuest": "Chọn khách trong danh sách đặt phòng trước đó.",
-      "createGuest": "Nhập thông tin để tạo hồ sơ khách và tiếp tục."
+      "selectGuest": "Đã tìm thấy thông tin khách. Kiểm tra lại trước khi đặt phòng.",
+      "createGuest": "Nhập thông tin khách để tạo hồ sơ và tiếp tục."
+    },
+    "search": {
+      "label": "CCCD hoặc số điện thoại",
+      "placeholder": "Nhập CCCD hoặc số điện thoại",
+      "find": "Tìm",
+      "create": "Tạo",
+      "cancel": "Hủy"
     },
     "form": {
       "name": "Tên khách hàng",
+      "citizenId": "Mã giấy tờ",
       "phone": "Số điện thoại",
       "namePlaceholder": "Nhập tên khách hàng",
-      "phonePlaceholder": "Nhập số điện thoại"
+      "citizenIdPlaceholder": "Nhập mã giấy tờ",
+      "phonePlaceholder": "Nhập số điện thoại",
+      "idType": "Loại giấy tờ",
+      "email": "Email",
+      "dateOfBirth": "Ngày sinh",
+      "gender": "Giới tính",
+      "nationality": "Quốc tịch",
+      "genderOptions": {
+        "male": "Nam",
+        "female": "Nữ",
+        "other": "Khác"
+      },
+      "emailPlaceholder": "Nhập email",
+      "dateOfBirthPlaceholder": "Chọn ngày sinh",
+      "nationalityPlaceholder": "Nhập quốc tịch"
     },
     "validation": {
       "dateRequired": "Vui lòng chọn ngày nhận và ngày trả phòng trước",
+      "checkinPastNotAllowed": "Ngày nhận phòng không được ở trong quá khứ",
+      "dateRangeInvalid": "Ngày nhận phòng phải trước ngày trả phòng",
+      "searchRequired": "Vui lòng nhập CCCD hoặc số điện thoại",
       "nameRequired": "Vui lòng nhập tên khách hàng",
+      "citizenIdRequired": "Vui lòng nhập mã giấy tờ",
+      "citizenIdInvalid": "CCCD phải có từ 9 đến 12 chữ số",
       "phoneRequired": "Vui lòng nhập số điện thoại",
       "phoneInvalid": "Số điện thoại phải có từ 9 đến 11 chữ số",
-      "selectGuest": "Vui lòng chọn khách hàng để tiếp tục"
+      "phoneExists": "Số điện thoại đã tồn tại",
+      "selectGuest": "Vui lòng chọn khách hàng để tiếp tục",
+      "nameInvalid": "Tên khách hàng phải có ít nhất 2 ký tự",
+      "citizenIdExists": "Mã giấy tờ đã tồn tại",
+      "passportInvalid": "Hộ chiếu phải gồm 6 đến 20 ký tự chữ hoặc số",
+      "idTypeRequired": "Vui lòng chọn loại giấy tờ",
+      "dateOfBirthRequired": "Vui lòng chọn ngày sinh",
+      "dateOfBirthInvalid": "Ngày sinh không hợp lệ",
+      "dateOfBirthUnder18": "Khách hàng phải từ 18 tuổi trở lên",
+      "genderRequired": "Vui lòng chọn giới tính",
+      "nationalityRequired": "Vui lòng nhập quốc tịch",
+      "emailRequired": "Vui lòng nhập email",
+      "emailInvalid": "Email không hợp lệ"
     },
     "messages": {
+      "guestNotFound": "Không tìm thấy khách phù hợp với CCCD hoặc số điện thoại này.",
+      "roomNotActive": "Phòng này hiện không thể đặt.",
+      "roomNotAvailableInRange": "Phòng đã có lịch đặt trong khoảng ngày bạn chọn.",
+      "bookingCreated": "Đặt phòng thành công. Mã đặt phòng: {code}",
       "confirmedExisting": "Đã xác nhận đặt phòng {room} cho {name}.",
       "createdAndBooked": "Đã tạo khách {name} và đặt phòng {room} thành công."
     }
+  },
+  "notFound": {
+    "title": "Không tìm thấy trang",
+    "description": "Trang hoặc phòng bạn tìm không tồn tại hoặc đã bị xóa.",
+    "goHome": "Về trang chủ"
   }
 }

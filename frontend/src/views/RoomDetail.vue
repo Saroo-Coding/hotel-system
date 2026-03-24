@@ -1,5 +1,5 @@
 <script setup>
-import { computed, onMounted, reactive, ref, watch } from "vue";
+import { computed, onMounted, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
 import { ElMessage } from "element-plus";
@@ -7,50 +7,26 @@ import { ArrowLeft } from "@element-plus/icons-vue";
 
 import Header from "@/components/Header.vue";
 import Footer from "@/components/Footer.vue";
-import { roomDetail } from "@/api/dashboard.api";
+import GuestBookingDialog from "@/components/GuestBookingDialog.vue";
+import { createBooking, roomDetail } from "@/api/dashboard.api";
 
 const { t } = useI18n();
 const route = useRoute();
 const router = useRouter();
 
 const loading = ref(false);
-const guestLoading = ref(false);
+const bookingSubmitting = ref(false);
 const activeImageIndex = ref(0);
+const bookingDialogVisible = ref(false);
 
 const detailRoom = ref({});
 const bookingDates = ref([]);
-
-const dialogState = reactive({
-  visible: false,
-  step: "question",
-});
-
-const guestState = reactive({
-  guestList: [],
-  selectedGuestId: null,
-  createForm: {
-    name: "",
-    phone: "",
-  },
-});
 
 const mockGallery = [
   "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=1200&q=80",
   "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=1200&q=80",
   "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=1200&q=80&sat=-20",
 ];
-
-function getGuestList() {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve([
-        { id: 1, name: "Nguyen Van An", phone: "0901234567" },
-        { id: 2, name: "Tran Minh Thu", phone: "0912345678" },
-        { id: 3, name: "Le Hoang Nam", phone: "0987654321" },
-      ]);
-    }, 500);
-  });
-}
 
 const roomImages = computed(() => {
   if (Array.isArray(detailRoom.value?.image) && detailRoom.value.image.length > 0) {
@@ -68,124 +44,113 @@ const bedTypeLabel = computed(() => {
   return detailRoom.value.bed_type;
 });
 
-const guestFormRules = {
-  name: [
-    {
-      required: true,
-      message: t("booking.validation.nameRequired"),
-      trigger: "blur",
-    },
-  ],
-  phone: [
-    {
-      required: true,
-      message: t("booking.validation.phoneRequired"),
-      trigger: "blur",
-    },
-    {
-      pattern: /^[0-9]{9,11}$/,
-      message: t("booking.validation.phoneInvalid"),
-      trigger: "blur",
-    },
-  ],
+const isUuid = (value) =>
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
+    String(value || ""),
+  );
+
+const isNotFoundError = (err) => {
+  const detail = String(err?.detail || "").toLowerCase();
+  const message = String(err?.message || "").toLowerCase();
+  return detail.includes("not found") || message.includes("not found");
 };
 
-const guestFormRef = ref();
-
 const fetchRoomDetail = async () => {
+  if (!isUuid(route.params.id)) {
+    router.replace("/404");
+    return;
+  }
+
   loading.value = true;
   try {
     const res = await roomDetail(route.params.id);
-    detailRoom.value = res?.data;
-    detailRoom.value.image = mockGallery;
+    if (!res?.data?.id) {
+      router.replace("/404");
+      return;
+    }
+
+    detailRoom.value = {
+      ...(res?.data || {}),
+      image: Array.isArray(res?.data?.image) && res.data.image.length > 0
+        ? res.data.image
+        : mockGallery,
+    };
   } catch (err) {
-    detailRoom.value = {};
-    ElMessage.warning(err?.message || t("room.mockFallback"));
+    if (isNotFoundError(err)) {
+      router.replace("/404");
+      return;
+    }
+    ElMessage.warning(err?.message || t("common.internal_server_error"));
+    router.replace("/404");
   } finally {
     loading.value = false;
   }
 };
 
 const isMaintenance = computed(() => detailRoom.value.status === "MAINTENANCE");
+const isBookDisabled = computed(() => !Array.isArray(bookingDates.value) || bookingDates.value.length !== 2);
 
 const statusLabel = computed(() => {
   const status = detailRoom.value?.status || 'MAINTENANCE'
   return t(`room.statusOptions.${status}`)
 })
 
-const resetDialogState = () => {
-  dialogState.step = "question";
-  guestState.guestList = [];
-  guestState.selectedGuestId = null;
-  guestState.createForm.name = "";
-  guestState.createForm.phone = "";
-  guestFormRef.value?.clearValidate();
-};
-
 const openBookingDialog = () => {
-  if (roomState.bookingDates.length !== 2) {
+  if (bookingSubmitting.value) return;
+  if (bookingDates.value.length !== 2) {
     ElMessage.warning(t("booking.validation.dateRequired"));
     return;
   }
 
-  dialogState.visible = true;
-  resetDialogState();
+  bookingDialogVisible.value = true;
 };
 
-const closeBookingDialog = () => {
-  dialogState.visible = false;
-  resetDialogState();
+const disablePastDate = (time) => {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  return time.getTime() < today.getTime();
 };
 
-const selectGuestHistory = async () => {
-  dialogState.step = "existing";
-  guestLoading.value = true;
-
-  try {
-    guestState.guestList = await getGuestList();
-  } catch (err) {
-    guestState.guestList = [];
-    ElMessage.error(err?.message || t("common.internal_server_error"));
-  } finally {
-    guestLoading.value = false;
+const toI18nMessage = (err, fallbackKey) => {
+  if (typeof err?.message === "string" && err.message.trim()) {
+    return t(err.message);
   }
+  if (typeof err?.detail === "string" && err.detail.trim()) {
+    return t(err.detail);
+  }
+  return t(fallbackKey);
 };
 
-const selectNewGuest = () => {
-  dialogState.step = "new";
-};
-
-const confirmExistingGuestBooking = () => {
-  const selectedGuest = guestState.guestList.find(
-    (guest) => guest.id === guestState.selectedGuestId,
-  );
-
-  if (!selectedGuest) {
-    ElMessage.warning(t("booking.validation.selectGuest"));
+const handleBooked = async (payload) => {
+  if (!payload?.guestId) {
+    ElMessage.error(t("common.internal_server_error"));
     return;
   }
 
-  ElMessage.success(
-    t("booking.messages.confirmedExisting", {
-      name: selectedGuest.name,
-      room: room.value.room_number,
-    }),
-  );
-  closeBookingDialog();
-};
+  if (!Array.isArray(bookingDates.value) || bookingDates.value.length !== 2) {
+    ElMessage.warning(t("booking.validation.dateRequired"));
+    return;
+  }
 
-const createGuestAndBook = async () => {
-  if (!guestFormRef.value) return;
+  bookingSubmitting.value = true;
+  try {
+    const [checkinDate, checkoutDate] = bookingDates.value;
+    const res = await createBooking({
+      room_id: route.params.id,
+      guest_id: payload.guestId,
+      checkin_date: checkinDate,
+      checkout_date: checkoutDate,
+    });
 
-  const valid = await guestFormRef.value.validate().catch(() => false);
-  if (valid) {
     ElMessage.success(
-      t("booking.messages.createdAndBooked", {
-        name: guestState.createForm.name,
-        room: room.value.room_number,
+      t("booking.messages.bookingCreated", {
+        code: res?.booking_code || res?.id || "",
       }),
     );
-    closeBookingDialog();
+  } catch (err) {
+    ElMessage.error(toI18nMessage(err, "common.internal_server_error"));
+  } finally {
+    bookingSubmitting.value = false;
   }
 };
 
@@ -365,6 +330,7 @@ watch(
                   v-model="bookingDates"
                   type="daterange"
                   class="booking-picker"
+                  :disabled-date="disablePastDate"
                   :range-separator="t('booking.to')"
                   :start-placeholder="t('booking.checkIn')"
                   :end-placeholder="t('booking.checkOut')"
@@ -376,6 +342,8 @@ watch(
                   type="primary"
                   size="large"
                   class="book-btn"
+                  :disabled="isBookDisabled || bookingSubmitting"
+                  :loading="bookingSubmitting"
                   @click="openBookingDialog"
                 >
                   {{ t("booking.bookNow") }}
@@ -387,100 +355,11 @@ watch(
       </template>
     </main>
 
-    <el-dialog
-      v-model="dialogState.visible"
-      :title="t('booking.dialog.title')"
-      width="520px"
-      class="booking-dialog"
-      @closed="resetDialogState"
-    >
-      <div v-if="dialogState.step === 'question'" class="dialog-step">
-        <p class="dialog-copy">{{ t("booking.dialog.question") }}</p>
-
-        <div class="dialog-actions">
-          <el-button type="primary" plain @click="selectGuestHistory">
-            {{ t("booking.dialog.returningGuest") }}
-          </el-button>
-          <el-button type="primary" @click="selectNewGuest">
-            {{ t("booking.dialog.newGuest") }}
-          </el-button>
-        </div>
-      </div>
-
-      <div v-else-if="dialogState.step === 'existing'" class="dialog-step">
-        <p class="dialog-copy">{{ t("booking.dialog.selectGuest") }}</p>
-
-        <el-skeleton v-if="guestLoading" animated :rows="3" />
-
-        <el-radio-group
-          v-else
-          v-model="guestState.selectedGuestId"
-          class="guest-list"
-        >
-          <el-radio
-            v-for="guest in guestState.guestList"
-            :key="guest.id"
-            :label="guest.id"
-            border
-            class="guest-item"
-          >
-            <div class="guest-meta">
-              <strong>{{ guest.name }}</strong>
-              <span>{{ guest.phone }}</span>
-            </div>
-          </el-radio>
-        </el-radio-group>
-      </div>
-
-      <div v-else class="dialog-step">
-        <p class="dialog-copy">{{ t("booking.dialog.createGuest") }}</p>
-
-        <el-form
-          ref="guestFormRef"
-          :model="guestState.createForm"
-          :rules="guestFormRules"
-          label-position="top"
-        >
-          <el-form-item :label="t('booking.form.name')" prop="name">
-            <el-input
-              v-model="guestState.createForm.name"
-              :placeholder="t('booking.form.namePlaceholder')"
-            />
-          </el-form-item>
-
-          <el-form-item :label="t('booking.form.phone')" prop="phone">
-            <el-input
-              v-model="guestState.createForm.phone"
-              :placeholder="t('booking.form.phonePlaceholder')"
-            />
-          </el-form-item>
-        </el-form>
-      </div>
-
-      <template #footer>
-        <div class="dialog-footer">
-          <el-button @click="closeBookingDialog">
-            {{ t("common.cancel") }}
-          </el-button>
-
-          <el-button
-            v-if="dialogState.step === 'existing'"
-            type="primary"
-            @click="confirmExistingGuestBooking"
-          >
-            {{ t("booking.confirmBooking") }}
-          </el-button>
-
-          <el-button
-            v-else-if="dialogState.step === 'new'"
-            type="primary"
-            @click="createGuestAndBook"
-          >
-            {{ t("booking.createAndBook") }}
-          </el-button>
-        </div>
-      </template>
-    </el-dialog>
+    <GuestBookingDialog
+      v-model="bookingDialogVisible"
+      :room-number="detailRoom.room_number"
+      @booked="handleBooked"
+    />
 
     <Footer />
   </div>
@@ -797,9 +676,7 @@ watch(
 
 .booking-card :deep(.el-input__wrapper),
 .booking-card :deep(.el-select__wrapper),
-.booking-card :deep(.el-range-editor.el-input__wrapper),
-.booking-dialog :deep(.el-input__wrapper),
-.booking-dialog :deep(.el-textarea__inner) {
+.booking-card :deep(.el-range-editor.el-input__wrapper) {
   background: var(--bg-tertiary);
   box-shadow: 0 0 0 1px var(--border-color) inset;
   color: var(--text-primary);
@@ -825,46 +702,6 @@ watch(
 
 .booking-disabled p {
   margin: 0;
-  color: var(--text-secondary);
-}
-
-.dialog-copy {
-  margin: 0 0 18px;
-  color: var(--text-secondary);
-  line-height: 1.6;
-}
-
-.dialog-actions,
-.dialog-footer {
-  display: flex;
-  gap: 12px;
-  justify-content: flex-end;
-  flex-wrap: wrap;
-}
-
-.guest-list {
-  display: grid;
-  gap: 12px;
-}
-
-.guest-item {
-  margin-right: 0;
-  width: 100%;
-  height: auto;
-  padding: 12px 14px;
-  border-radius: 16px;
-}
-
-.guest-meta {
-  display: grid;
-  gap: 4px;
-}
-
-.guest-meta strong {
-  color: var(--text-primary);
-}
-
-.guest-meta span {
   color: var(--text-secondary);
 }
 
@@ -901,25 +738,8 @@ watch(
 }
 
 .room-detail-page :deep(.el-card__body),
-.room-detail-page :deep(.el-card__header),
-.booking-dialog :deep(.el-dialog) {
+.room-detail-page :deep(.el-card__header) {
   background: transparent;
-}
-
-.booking-dialog :deep(.el-dialog) {
-  border: 1px solid var(--border-color);
-  border-radius: 24px;
-  background: var(--card-surface);
-  box-shadow: var(--shadow-strong);
-}
-
-.booking-dialog :deep(.el-dialog__title) {
-  color: var(--text-primary);
-}
-
-.booking-dialog :deep(.el-radio.is-bordered) {
-  background: var(--bg-tertiary);
-  border-color: var(--border-color);
 }
 
 @media (max-width: 1024px) {

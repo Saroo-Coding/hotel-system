@@ -14,8 +14,8 @@ class Guest(Base):
     id_number = Column(String(50), unique=True, nullable=False)  # CCCD / Passport number
     date_of_birth = Column(Date, nullable=False)
     gender = Column(String(10), nullable=False)
-    nationality = Column(String(50), nullable=False)
+    nationality = Column(String(50), nullable=True)
     phone = Column(String(20), nullable=False)
-    email = Column(String(255), nullable=False)
+    email = Column(String(255), nullable=True)
     del_flag = Column(Boolean, default=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now())

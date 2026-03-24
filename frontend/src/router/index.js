@@ -25,6 +25,12 @@ const router = createRouter({
       meta: { public: true },
     },
     {
+      path: "/404",
+      name: "not-found",
+      component: () => import("@/views/NotFound.vue"),
+      meta: { public: true },
+    },
+    {
       path: "/admin",
       meta: { roles: ["ADMIN"] },
       children: [
@@ -50,6 +56,11 @@ const router = createRouter({
     {
       path: "/forbidden",
       // component: () => import("@/pages/Forbidden.vue")
+    },
+    {
+      path: "/:pathMatch(.*)*",
+      redirect: "/404",
+      meta: { public: true },
     },
   ],
 });

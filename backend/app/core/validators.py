@@ -26,7 +26,25 @@ def validate_email(email: str) -> bool:
 
 def validate_phone(phone: str) -> bool:
     ''' Validate Vietnamese phone number '''
-    return bool(re.fullmatch(r"0[3|5|7|8|9][0-9]{8}", phone))
+    return bool(re.fullmatch(r"0[35789][0-9]{8}", (phone or "").strip()))
+
+def validate_cccd(id_number: str) -> bool:
+    ''' Validate CCCD: exactly 12 digits '''
+    return bool(re.fullmatch(r"\d{12}", (id_number or "").strip()))
+
+def validate_guest_search_keyword(keyword: str) -> str | None:
+    '''
+    Return matched field for guest search:
+    - "id_number" for CCCD
+    - "phone" for Vietnamese phone number
+    - None if invalid
+    '''
+    keyword = (keyword or "").strip()
+    if validate_cccd(keyword):
+        return "id_number"
+    if validate_phone(keyword):
+        return "phone"
+    return None
 
 def validate_full_name(name: str) -> str:
     ''' Validate full name '''

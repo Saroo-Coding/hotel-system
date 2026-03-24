@@ -14,9 +14,9 @@ CREATE TABLE IF NOT EXISTS guests (
     id_number VARCHAR(50) UNIQUE NOT NULL,    -- số CCCD / Passport
     date_of_birth DATE NOT NULL,
     gender VARCHAR(10) NOT NULL,
-    nationality VARCHAR(50) NOT NULL,
+    nationality VARCHAR(50) NULL,
     phone VARCHAR(20) NOT NULL,
-    email VARCHAR(255) NOT NULL,
+    email VARCHAR(255) NULL,
     del_flag BOOLEAN DEFAULT FALSE,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT now()
 );
@@ -146,8 +146,7 @@ CREATE TYPE booking_status AS ENUM (
 
 CREATE TABLE IF NOT EXISTS bookings (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-
-    hotel_id UUID NOT NULL,
+    booking_code VARCHAR(7) UNIQUE NOT NULL, -- format: XXX_XXX
     room_id UUID NOT NULL,
 
     guest_id UUID NOT NULL,        -- khách lưu trú
@@ -163,12 +162,10 @@ CREATE TABLE IF NOT EXISTS bookings (
 
     total_price NUMERIC(15,0) NOT NULL CHECK (total_price >= 0), -- VND,
 
-    checkin_source VARCHAR(20), -- nguồn checkin: FRONT_DESK, MOBILE_APP, KIOSK
-
     created_at TIMESTAMP WITH TIME ZONE DEFAULT now(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT now()
 );
-CREATE INDEX idx_bookings_hotel_id ON bookings(hotel_id); -- Tìm booking theo khách sạn
+CREATE INDEX idx_bookings_booking_code ON bookings(booking_code); -- Tim booking theo ma dat phong
 CREATE INDEX idx_bookings_room_id ON bookings(room_id); -- Tìm booking theo phòng
 CREATE INDEX idx_bookings_guest_id ON bookings(guest_id); -- Tìm booking theo khách hàng
 CREATE INDEX idx_bookings_status ON bookings(status); -- Tìm booking theo trạng thái

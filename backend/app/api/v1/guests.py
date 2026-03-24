@@ -1,9 +1,19 @@
 from uuid import UUID
 from fastapi import APIRouter, status, Depends, HTTPException, Query
+from fastapi.responses import JSONResponse
 from pytest import Session
 from sqlalchemy import or_
+from datetime import datetime
 
 from app.core.database import SessionLocal
+from app.core.validators import (
+    validate_birth_date,
+    validate_cccd,
+    validate_email,
+    validate_full_name,
+    validate_guest_search_keyword,
+    validate_phone,
+)
 from app.api.deps import check_roles, pagination_response
 from app.models.users import User, UserRole
 from app.schemas.guest_schemas import StaffCreateGuest, UpdateGuest
@@ -21,23 +31,91 @@ def get_db():
     finally:
         db.close()
 
-@router.post("/staff/create")
+@router.post("/create")
 def create_guest(
     payload: StaffCreateGuest,
     db: Session = Depends(get_db),
-    _: User = Depends(check_roles(UserRole.STAFF))
 ):
+    errors = {}
+    full_name = (payload.full_name or "").strip()
+    id_type = (payload.id_type or "").strip()
+    id_number = (payload.id_number or "").strip()
+    date_of_birth_raw = (payload.date_of_birth or "").strip()
+    gender = (payload.gender or "").strip()
+    nationality = (payload.nationality or "").strip()
+    phone = (payload.phone or "").strip()
+    email = (payload.email or "").strip()
+
+    if not full_name:
+        errors["full_name"] = "booking.validation.nameRequired"
+    elif validate_full_name(full_name):
+        errors["full_name"] = "booking.validation.nameInvalid"
+
+    if not id_type:
+        errors["id_type"] = "booking.validation.idTypeRequired"
+    elif id_type not in {"CCCD", "Passport"}:
+        errors["id_type"] = "booking.validation.idTypeRequired"
+
+    if not id_number:
+        errors["id_number"] = "booking.validation.citizenIdRequired"
+    elif id_type == "CCCD" and not validate_cccd(id_number):
+        errors["id_number"] = "booking.validation.citizenIdInvalid"
+    elif id_type == "Passport" and not id_number.isalnum():
+        errors["id_number"] = "booking.validation.passportInvalid"
+
+    date_of_birth = None
+    if not date_of_birth_raw:
+        errors["date_of_birth"] = "booking.validation.dateOfBirthRequired"
+    else:
+        try:
+            date_of_birth = datetime.strptime(date_of_birth_raw, "%Y-%m-%d").date()
+            birth_date_error = validate_birth_date(date_of_birth)
+            if birth_date_error == "birth_date_under_18":
+                errors["date_of_birth"] = "booking.validation.dateOfBirthUnder18"
+            elif birth_date_error:
+                errors["date_of_birth"] = "booking.validation.dateOfBirthInvalid"
+        except ValueError:
+            errors["date_of_birth"] = "booking.validation.dateOfBirthInvalid"
+
+    if not gender:
+        errors["gender"] = "booking.validation.genderRequired"
+    elif gender not in {"MALE", "FEMALE", "OTHER"}:
+        errors["gender"] = "booking.validation.genderRequired"
+
+    if not phone:
+        errors["phone"] = "booking.validation.phoneRequired"
+    elif not validate_phone(phone):
+        errors["phone"] = "booking.validation.phoneInvalid"
+
+    if email and not validate_email(email):
+        errors["email"] = "booking.validation.emailInvalid"
+
+    if id_number and db.query(Guest).filter(Guest.id_number == id_number, Guest.del_flag == False).first():
+        errors["id_number"] = "booking.validation.citizenIdExists"
+
+    if phone and db.query(Guest).filter(Guest.phone == phone, Guest.del_flag == False).first():
+        errors["phone"] = "booking.validation.phoneExists"
+
+    if errors:
+        return JSONResponse(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            content={
+                "success": False,
+                "error": errors
+            }
+        )
+
     try:
         guest = Guest(
             user_id = payload.user_id,
-            full_name = payload.full_name,
-            id_type = payload.id_type,
-            id_number = payload.id_number,
-            date_of_birth = payload.date_of_birth,
-            gender = payload.gender,
-            nationality = payload.nationality,
-            phone = payload.phone,
-            email = payload.email
+            full_name = full_name,
+            id_type = id_type,
+            id_number = id_number,
+            date_of_birth = date_of_birth,
+            gender = gender,
+            nationality = nationality or None,
+            phone = phone,
+            email = email or None
         )
 
         db.add(guest)
@@ -57,7 +135,7 @@ def create_guest(
         logger.exception("Unexpected error in create_guest. ERROR: " + str(e))
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Internal Server Error"
+            detail="common.internal_server_error"
         )
 
 @router.get("/manager/list_guest")
@@ -267,33 +345,42 @@ def restore_guest(
 
 @router.get("/search")
 def search_guest(
-    keyword: str = Query(..., min_length=1),
+    keyword: str | None = Query(None),
     db: Session = Depends(get_db),
 ):
     try:
-        keyword = keyword.strip()
-        if not keyword:
+        keyword = (keyword or "").strip()
+        if keyword == "":
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST, 
-                detail="Keyword cannot be empty"
+                detail="booking.validation.searchRequired"
             )
 
-        keyword_like = f"%{keyword}%"
-        guest = (
-            db.query(Guest)
-            .filter(
-                or_(
-                    Guest.id_number.ilike(keyword_like),
-                    Guest.email.ilike(keyword_like),
-                    Guest.phone.ilike(keyword_like)
-                )
-            ).first()
-        )
+        keyword_type = validate_guest_search_keyword(keyword)
+        if keyword_type is None:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="common.invalid_format"
+            )
+
+        query = db.query(Guest)
+        if keyword_type == "id_number":
+            query = query.filter(
+                Guest.id_number == keyword,
+                Guest.del_flag == False
+            )
+        else:
+            query = query.filter(
+                Guest.phone == keyword,
+                Guest.del_flag == False
+            )
+
+        guest = query.first()
 
         if not guest:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND, 
-                detail="Guest not found"
+                detail="booking.messages.guestNotFound"
             )
 
         return {
@@ -314,10 +401,11 @@ def search_guest(
                 "created_at": guest.created_at.strftime("%d/%m/%Y %H:%M")
             }
         }
-
+    except HTTPException:
+        raise
     except Exception as e:
         logger.exception("Unexpected error in search_guest. ERROR: " + str(e))
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Internal Server Error"
+            detail="common.internal_server_error"
         )

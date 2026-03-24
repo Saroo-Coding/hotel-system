@@ -17,7 +17,7 @@ class Booking(Base):
     __tablename__ = "bookings"
 
     id = Column(UUID(as_uuid=True), primary_key=True, server_default=func.gen_random_uuid())
-    hotel_id = Column(UUID(as_uuid=True), nullable=False)
+    booking_code = Column(String(7), unique=True, nullable=False)
     room_id = Column(UUID(as_uuid=True), nullable=False)
     guest_id = Column(UUID(as_uuid=True), nullable=False)
     user_id = Column(UUID(as_uuid=True))
@@ -27,6 +27,5 @@ class Booking(Base):
     checkout_at = Column(DateTime(timezone=True))
     status = Column(Enum(BookingStatus), nullable=False, default=BookingStatus.PENDING)
     total_price = Column(Numeric(15, 0), nullable=False)
-    checkin_source = Column(String(20))
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())

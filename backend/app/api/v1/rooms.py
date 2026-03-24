@@ -98,7 +98,7 @@ def get_room_detail(
         if not room:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
-                detail="Hotel not found"
+                detail="Room not found"
             )
         
         return {
@@ -119,6 +119,8 @@ def get_room_detail(
                 "updated_at": room.updated_at.strftime("%d/%m/%Y %H:%M")
             }
         }
+    except HTTPException:
+        raise
     except Exception as e:
         logger.exception("Unexpected error in get_room_detail. ERROR: " + str(e))
         raise HTTPException(

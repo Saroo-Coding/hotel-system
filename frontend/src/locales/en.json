@@ -111,6 +111,9 @@
       "AVAILABLE": "Available",
       "MAINTENANCE": "Maintenance",
       "BOOKED": "Booked"
+    },
+    "messages": {
+      "notFound": "Room not found"
     }
   },
   "booking": {
@@ -120,6 +123,7 @@
     "checkIn": "Check in",
     "checkOut": "Check out",
     "to": "to",
+    "book": "Book",
     "bookNow": "Book Now",
     "confirmBooking": "Confirm Booking",
     "createAndBook": "Create & Book",
@@ -127,29 +131,77 @@
     "unavailableDescription": "This room is currently under maintenance, so booking is temporarily disabled.",
     "dialog": {
       "title": "Booking confirmation",
-      "question": "Have you booked a room with us before?",
+      "question": "Have you booked before? Search by citizen ID or phone number.",
       "returningGuest": "Already booked",
       "newGuest": "Not yet",
-      "selectGuest": "Select a guest from your previous booking history.",
-      "createGuest": "Enter your information to create a guest profile and continue."
+      "selectGuest": "Guest information found. Review it before booking.",
+      "createGuest": "Enter your guest information to create a profile and continue."
+    },
+    "search": {
+      "label": "Citizen ID or phone number",
+      "placeholder": "Enter citizen ID or phone number",
+      "find": "Find",
+      "create": "Create",
+      "cancel": "Cancel"
     },
     "form": {
       "name": "Guest name",
+      "idType": "ID type",
+      "citizenId": "Citizen ID",
       "phone": "Phone number",
+      "email": "Email",
+      "dateOfBirth": "Date of birth",
+      "gender": "Gender",
+      "nationality": "Nationality",
+      "genderOptions": {
+        "male": "Male",
+        "female": "Female",
+        "other": "Other"
+      },
       "namePlaceholder": "Enter guest name",
-      "phonePlaceholder": "Enter phone number"
+      "citizenIdPlaceholder": "Enter citizen ID",
+      "phonePlaceholder": "Enter phone number",
+      "emailPlaceholder": "Enter email",
+      "dateOfBirthPlaceholder": "Select date of birth",
+      "nationalityPlaceholder": "Enter nationality"
     },
     "validation": {
       "dateRequired": "Please select check-in and check-out dates first",
+      "checkinPastNotAllowed": "Check-in date cannot be in the past",
+      "dateRangeInvalid": "Check-in date must be earlier than check-out date",
+      "searchRequired": "Please enter citizen ID or phone number",
       "nameRequired": "Guest name is required",
+      "nameInvalid": "Guest name must be at least 2 characters",
+      "citizenIdRequired": "Citizen ID is required",
+      "citizenIdInvalid": "Citizen ID must contain 9 to 12 digits",
+      "citizenIdExists": "Citizen ID already exists",
+      "passportInvalid": "Passport must contain 6 to 20 letters or digits",
+      "idTypeRequired": "ID type is required",
+      "dateOfBirthRequired": "Date of birth is required",
+      "dateOfBirthInvalid": "Date of birth is invalid",
+      "dateOfBirthUnder18": "Guest must be at least 18 years old",
+      "genderRequired": "Gender is required",
+      "nationalityRequired": "Nationality is required",
       "phoneRequired": "Phone number is required",
-      "phoneInvalid": "Phone number must contain 9 to 11 digits",
+      "phoneInvalid": "Phone number must be a valid Vietnamese number (10 digits)",
+      "phoneExists": "Phone number already exists",
+      "emailRequired": "Email is required",
+      "emailInvalid": "Email is invalid",
       "selectGuest": "Please select a guest to continue"
     },
     "messages": {
+      "guestNotFound": "No guest matched that citizen ID or phone number.",
+      "roomNotActive": "This room is currently unavailable for booking.",
+      "roomNotAvailableInRange": "This room is already booked in the selected date range.",
+      "bookingCreated": "Booking created successfully. Code: {code}",
       "confirmedExisting": "Booking confirmed for {name} in room {room}.",
       "createdAndBooked": "Guest {name} created and room {room} booked successfully."
     }
+  },
+  "notFound": {
+    "title": "Page Not Found",
+    "description": "The page or room you are looking for does not exist or may have been removed.",
+    "goHome": "Back to Home"
   }
 }
 
