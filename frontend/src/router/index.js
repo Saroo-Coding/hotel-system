@@ -15,6 +15,18 @@ const router = createRouter({
       meta: { public: true },
     },
     {
+      path: "/my-room",
+      name: "my-room",
+      component: () => import("@/views/BookingPending.vue"),
+      meta: { public: true },
+    },
+    {
+      path: "/my-room/:bookingCode",
+      name: "my-room-code",
+      component: () => import("@/views/BookingPending.vue"),
+      meta: { public: true },
+    },
+    {
       path: "/login",
       component: () => import("@/views/Login.vue"),
       meta: { public: true },

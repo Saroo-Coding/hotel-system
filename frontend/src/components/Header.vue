@@ -1,9 +1,23 @@
 <script setup>
+import { computed } from "vue";
 import { useI18n } from "vue-i18n";
+import { useRoute, useRouter } from "vue-router";
 import ThemeToggle from "@/components/ThemeToggle.vue";
 import LanguageToggle from "@/components/LanguageToggle.vue";
 
 const { t } = useI18n();
+const route = useRoute();
+const router = useRouter();
+
+const activeMenu = computed(() => {
+  if (route.path.startsWith("/my-room")) return "my-room";
+  return "home";
+});
+
+const onMenuSelect = (key) => {
+  if (key === "home") router.push("/");
+  if (key === "my-room") router.push("/my-room");
+};
 </script>
 
 <template>
@@ -14,12 +28,16 @@ const { t } = useI18n();
       <div class="header-right">
         <el-menu
           mode="horizontal"
-          default-active="home"
+          :default-active="activeMenu"
           class="main-menu"
           :ellipsis="false"
+          @select="onMenuSelect"
         >
           <el-menu-item index="home">{{ t("dashboard.home") }}</el-menu-item>
-          <el-menu-item index="rooms">{{ t("dashboard.room") }}</el-menu-item>
+          <el-sub-menu index="activity">
+            <template #title>{{ t("dashboard.activity") }}</template>
+            <el-menu-item index="my-room">{{ t("dashboard.myRoom") }}</el-menu-item>
+          </el-sub-menu>
         </el-menu>
 
         <div class="top-actions">

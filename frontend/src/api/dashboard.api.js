@@ -27,3 +27,15 @@ export function createBooking(payload) {
     body: JSON.stringify(payload),
   });
 }
+
+export function searchBookingByCode(bookingCode) {
+  return request(`/bookings/search?booking_code=${encodeURIComponent(bookingCode)}`, {
+    method: "GET",
+  });
+}
+
+export function cancelBooking(bookingCode) {
+  return request(`/bookings/cancel?booking_code=${encodeURIComponent(bookingCode)}`, {
+    method: "DELETE",
+  });
+}

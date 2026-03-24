@@ -58,6 +58,8 @@
   "dashboard": {
     "logo": "Saroo Hotel",
     "home": "Trang chủ",
+    "activity": "Hoạt động",
+    "myRoom": "Phòng của tôi",
     "room": "Phòng",
     "eyebrow": "WEBSITE ĐẶT PHÒNG KHÁCH SẠN",
     "title": "Tìm phòng cho chuyến đi của bạn",
@@ -196,6 +198,97 @@
       "bookingCreated": "Đặt phòng thành công. Mã đặt phòng: {code}",
       "confirmedExisting": "Đã xác nhận đặt phòng {room} cho {name}.",
       "createdAndBooked": "Đã tạo khách {name} và đặt phòng {room} thành công."
+    },
+    "pending": {
+      "eyebrow": "Chờ thanh toán",
+      "title": "Đặt phòng thành công, đang chờ thanh toán",
+      "description": "Yêu cầu đặt phòng của bạn đã được tạo. Vui lòng hoàn tất thanh toán để xác nhận đơn đặt phòng này.",
+      "redirectIn": "Vui lòng thanh toán sau {time}",
+      "bookingCode": "Mã đặt phòng",
+      "bookingStatus": "Trạng thái đặt phòng",
+      "paymentStatus": "Trạng thái thanh toán",
+      "totalPrice": "Tổng tiền",
+      "bookingInfoTitle": "Thông tin đặt phòng",
+      "paymentTitle": "Thanh toán",
+      "paymentMethod": "Phương thức thanh toán",
+      "checkinDate": "Ngày nhận phòng",
+      "checkoutDate": "Ngày trả phòng",
+      "goHomeNow": "Về trang chủ ngay",
+      "missingCode": "Thiếu mã đặt phòng",
+      "notFound": "Không tìm thấy thông tin đặt phòng",
+      "tokenExpired": "Phiên thanh toán đã hết hạn. Vui lòng tạo đặt phòng mới.",
+      "tokenUsed": "Phiên thanh toán không còn hiệu lực.",
+      "methodOptions": {
+        "bank_transfer": "Chuyển khoản ngân hàng",
+        "credit_card": "Thẻ tín dụng",
+        "e_wallet": "Ví điện tử"
+      },
+      "methodDescriptions": {
+        "bank_transfer": "Chuyển khoản thủ công và tải biên lai",
+        "credit_card": "Hỗ trợ Visa, MasterCard, JCB",
+        "e_wallet": "Thanh toán nhanh qua ví điện tử"
+      },
+      "fake": {
+        "title": "Thông tin thanh toán mẫu",
+        "fields": {
+          "accountName": "Tên tài khoản",
+          "accountNumber": "Số tài khoản",
+          "bankName": "Ngân hàng",
+          "cardHolder": "Chủ thẻ",
+          "cardNumber": "Số thẻ",
+          "gateway": "Cổng thanh toán",
+          "walletProvider": "Nhà cung cấp ví",
+          "walletId": "Mã ví",
+          "walletPhone": "Số điện thoại ví"
+        }
+      },
+      "fakeValues": {
+        "accountName": "CÔNG TY TNHH SAROO HOTEL",
+        "accountNumber": "0358 2026 6688",
+        "bankName": "Vietcombank - Chi nhánh TP.HCM",
+        "cardHolder": "NGUYEN VAN A",
+        "cardNumber": "**** **** **** 3689",
+        "gateway": "Cổng OnePay Sandbox",
+        "walletProvider": "ZaloPay Sandbox",
+        "walletId": "SarooHotel_2026",
+        "walletPhone": "09xx xxx 688"
+      },
+      "statusOptions": {
+        "PENDING": "Chờ thanh toán",
+        "CONFIRMED": "Đã xác nhận",
+        "CANCELLED": "Đã hủy",
+        "CHECKED_IN": "Đã nhận phòng",
+        "CHECKED_OUT": "Đã trả phòng",
+        "NO_SHOW": "Không đến nhận phòng"
+      },
+      "paymentOptions": {
+        "PENDING": "Chờ thanh toán",
+        "PAID": "Đã thanh toán",
+        "FAILED": "Thanh toán thất bại",
+        "REFUNDED": "Đã hoàn tiền"
+      }
+    },
+    "lookup": {
+      "eyebrow": "Tìm phòng của bạn",
+      "title": "Tra cứu đặt phòng",
+      "description": "Nhập mã đặt phòng để xem trạng thái đặt phòng và thông tin thanh toán mới nhất.",
+      "placeholder": "Nhập mã đặt phòng (ví dụ: ABC_123)",
+      "search": "Tra cứu",
+      "searchRequired": "Vui lòng nhập mã đặt phòng",
+      "cancel": "Hủy đặt phòng",
+      "cancelConfirm": "Bạn có chắc muốn hủy đặt phòng này không?",
+      "cancelSuccess": "Đã hủy đặt phòng thành công.",
+      "cannotCancel": "Chỉ có thể hủy booking đang chờ thanh toán.",
+      "empty": "Chưa có kết quả. Vui lòng nhập mã đặt phòng để tra cứu.",
+      "statusTitle": "Chi tiết trạng thái đặt phòng",
+      "statusDescriptions": {
+        "PENDING": "Đặt phòng đã được tạo và đang chờ xác nhận thanh toán.",
+        "CONFIRMED": "Đặt phòng của bạn đã được xác nhận.",
+        "CHECKED_IN": "Bạn đã nhận phòng thành công.",
+        "CHECKED_OUT": "Bạn đã trả phòng thành công.",
+        "CANCELLED": "Đặt phòng này đã bị hủy.",
+        "NO_SHOW": "Đặt phòng này được ghi nhận là khách không đến."
+      }
     }
   },
   "notFound": {

@@ -6,6 +6,7 @@ import { useRouter } from "vue-router";
 import Header from "@/components/Header.vue";
 import Footer from "@/components/Footer.vue";
 import { listRoom } from "@/api/dashboard.api";
+import { disablePastDate } from "@/utils/date";
 
 import { ElMessage } from "element-plus";
 import { Calendar, OfficeBuilding } from "@element-plus/icons-vue";
@@ -67,6 +68,7 @@ onMounted(() => {
               <el-date-picker
                 v-model="searchForm.dateRange"
                 type="daterange"
+                :disabled-date="disablePastDate"
                 :range-separator="t('dashboard.to')"
                 :start-placeholder="t('dashboard.dateStart')"
                 :end-placeholder="t('dashboard.dateEnd')"

@@ -9,6 +9,7 @@ import Header from "@/components/Header.vue";
 import Footer from "@/components/Footer.vue";
 import GuestBookingDialog from "@/components/GuestBookingDialog.vue";
 import { createBooking, roomDetail } from "@/api/dashboard.api";
+import { disablePastDate } from "@/utils/date";
 
 const { t } = useI18n();
 const route = useRoute();
@@ -105,12 +106,6 @@ const openBookingDialog = () => {
   bookingDialogVisible.value = true;
 };
 
-const disablePastDate = (time) => {
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  return time.getTime() < today.getTime();
-};
-
 const toI18nMessage = (err, fallbackKey) => {
   if (typeof err?.message === "string" && err.message.trim()) {
     return t(err.message);
@@ -134,19 +129,24 @@ const handleBooked = async (payload) => {
 
   bookingSubmitting.value = true;
   try {
-    const [checkinDate, checkoutDate] = bookingDates.value;
     const res = await createBooking({
       room_id: route.params.id,
       guest_id: payload.guestId,
-      checkin_date: checkinDate,
-      checkout_date: checkoutDate,
+      checkin_date: bookingDates.value[0],
+      checkout_date: bookingDates.value[1],
     });
+    const bookingCode = String(res?.booking_code || "").trim();
+    if (!bookingCode) {
+      ElMessage.error(t("common.internal_server_error"));
+      return;
+    }
 
-    ElMessage.success(
-      t("booking.messages.bookingCreated", {
-        code: res?.booking_code || res?.id || "",
-      }),
-    );
+    router.push({
+      name: "my-room-code",
+      params: {
+        bookingCode,
+      },
+    });
   } catch (err) {
     ElMessage.error(toI18nMessage(err, "common.internal_server_error"));
   } finally {

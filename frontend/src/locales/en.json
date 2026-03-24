@@ -58,6 +58,8 @@
   "dashboard": {
     "logo": "Saroo Hotel",
     "home": "Home",
+    "activity": "Activity",
+    "myRoom": "My Room",
     "room": "Room",
     "eyebrow": "SIMPLE HOTEL BOOKING SPA",
     "title": "Find the right room for your trip",
@@ -196,6 +198,97 @@
       "bookingCreated": "Booking created successfully. Code: {code}",
       "confirmedExisting": "Booking confirmed for {name} in room {room}.",
       "createdAndBooked": "Guest {name} created and room {room} booked successfully."
+    },
+    "pending": {
+      "eyebrow": "Waiting for payment",
+      "title": "Your booking is waiting for payment",
+      "description": "Your booking request has been created successfully. Please complete payment to confirm this booking.",
+      "redirectIn": "Please complete payment within {time}",
+      "bookingCode": "Booking code",
+      "bookingStatus": "Booking status",
+      "paymentStatus": "Payment status",
+      "totalPrice": "Total price",
+      "bookingInfoTitle": "Booking information",
+      "paymentTitle": "Payment",
+      "paymentMethod": "Payment method",
+      "checkinDate": "Check-in date",
+      "checkoutDate": "Check-out date",
+      "goHomeNow": "Back to homepage now",
+      "missingCode": "Missing booking code",
+      "notFound": "Booking was not found",
+      "tokenExpired": "The payment session has expired. Please create a new booking.",
+      "tokenUsed": "This payment session is no longer valid.",
+      "methodOptions": {
+        "bank_transfer": "Bank transfer",
+        "credit_card": "Credit card",
+        "e_wallet": "E-wallet"
+      },
+      "methodDescriptions": {
+        "bank_transfer": "Manual transfer and upload receipt",
+        "credit_card": "Visa, MasterCard, JCB accepted",
+        "e_wallet": "Fast payment by supported wallets"
+      },
+      "fake": {
+        "title": "Demo payment information",
+        "fields": {
+          "accountName": "Account name",
+          "accountNumber": "Account number",
+          "bankName": "Bank",
+          "cardHolder": "Card holder",
+          "cardNumber": "Card number",
+          "gateway": "Gateway",
+          "walletProvider": "Wallet provider",
+          "walletId": "Wallet ID",
+          "walletPhone": "Wallet phone"
+        }
+      },
+      "fakeValues": {
+        "accountName": "SAROO HOTEL CO., LTD",
+        "accountNumber": "0358 2026 6688",
+        "bankName": "Vietcombank - HCM Branch",
+        "cardHolder": "NGUYEN VAN A",
+        "cardNumber": "**** **** **** 3689",
+        "gateway": "OnePay Sandbox Gateway",
+        "walletProvider": "ZaloPay Sandbox",
+        "walletId": "SarooHotel_2026",
+        "walletPhone": "09xx xxx 688"
+      },
+      "statusOptions": {
+        "PENDING": "Waiting for payment",
+        "CONFIRMED": "Confirmed",
+        "CANCELLED": "Cancelled",
+        "CHECKED_IN": "Checked in",
+        "CHECKED_OUT": "Checked out",
+        "NO_SHOW": "No show"
+      },
+      "paymentOptions": {
+        "PENDING": "Waiting for payment",
+        "PAID": "Paid",
+        "FAILED": "Payment failed",
+        "REFUNDED": "Refunded"
+      }
+    },
+    "lookup": {
+      "eyebrow": "Find your room",
+      "title": "Search your booking",
+      "description": "Enter your booking code to view the latest booking status and payment information.",
+      "placeholder": "Enter booking code (e.g. ABC_123)",
+      "search": "Search",
+      "searchRequired": "Please enter booking code",
+      "cancel": "Cancel booking",
+      "cancelConfirm": "Are you sure you want to cancel this booking?",
+      "cancelSuccess": "Booking cancelled successfully.",
+      "cannotCancel": "Only pending bookings can be cancelled.",
+      "empty": "No booking selected yet. Please enter a booking code to search.",
+      "statusTitle": "Booking status details",
+      "statusDescriptions": {
+        "PENDING": "Your booking is created and waiting for payment confirmation.",
+        "CONFIRMED": "Your booking has been confirmed by the system.",
+        "CHECKED_IN": "You have successfully checked in.",
+        "CHECKED_OUT": "You have completed checkout.",
+        "CANCELLED": "This booking has been cancelled.",
+        "NO_SHOW": "This booking was marked as no-show."
+      }
     }
   },
   "notFound": {
