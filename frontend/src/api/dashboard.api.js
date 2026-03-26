@@ -47,6 +47,18 @@ export function createPayment(payload) {
   });
 }
 
+export function listHotels() {
+  return request("/hotels/list_hotels", { method: "GET" });
+}
+
+export function deactivateHotel(hotelId) {
+  return request(`/hotels/admin/deactivate?hotel_id=${hotelId}`, { method: "PATCH" });
+}
+
+export function activateHotel(hotelId) {
+  return request(`/hotels/admin/activate?hotel_id=${hotelId}`, { method: "PATCH" });
+}
+
 export function searchRooms(checkinDate, checkoutDate, bedType) {
   let url = `/rooms/search?checkin_date=${checkinDate}&checkout_date=${checkoutDate}`;
   if (bedType && bedType !== "ALL") {

@@ -1,12 +1,13 @@
 from uuid import UUID
-from fastapi import APIRouter, status, Depends, HTTPException, Query
+from fastapi import APIRouter, status, Depends, HTTPException
 from pytest import Session
-from sqlalchemy import func, or_
+from sqlalchemy import func, case
 
 from app.core.database import SessionLocal
-from app.api.deps import check_roles, pagination_response
+from app.api.deps import check_roles
 from app.models.users import User, UserRole
 from app.models.hotels import Hotel, HotelStatus
+from app.models.rooms import Room, RoomStatus
 from app.schemas.hotel_schemas import HotelUpdate
 
 import logging
@@ -24,54 +25,46 @@ def get_db():
 @router.get("/list_hotels")
 def get_hotels(
     db: Session = Depends(get_db),
-
-    page: int = Query(1, ge=1),
-    limit: int = Query(20, ge=1, le=100),
-    keyword: str | None = Query(None)
+    _: User = Depends(check_roles(UserRole.ADMIN, UserRole.STAFF))
 ):
     try:
-        query = db.query(Hotel)
-
-        if keyword:
-            keyword_like = f"%{keyword}%"
-            query = query.filter(
-                or_(
-                    Hotel.name.ilike(keyword_like),
-                    Hotel.address.ilike(keyword_like),
-                    Hotel.phone.ilike(keyword_like),
-                    Hotel.email.ilike(keyword_like),
-                )
-            )        
-
-        total = query.count()
-        
         hotels = (
-            query
+            db.query(
+                Hotel,
+                func.count(Room.id).label('total_rooms'),
+                func.sum(case(
+                    (Room.status != RoomStatus.MAINTENANCE, 1),
+                    else_=0
+                )).label('available_rooms')
+            )
+            .outerjoin(Room, Hotel.id == Room.hotel_id)
+            .group_by(Hotel.id)
             .order_by(Hotel.updated_at.desc())
-            .offset((page - 1) * limit)
-            .limit(limit)
             .all()
         )
 
         data = [
             {
-                "id": hotel.id,
-                "name": hotel.name,
-                "address": hotel.address,
-                "phone": hotel.phone,
-                "email": hotel.email,
-                "description": hotel.description,
-                "updated_at": hotel.updated_at.strftime("%d/%m/%Y %H:%M"),
+                "id": str(h.id),
+                "name": h.name,
+                "address": h.address,
+                "phone": h.phone,
+                "email": h.email,
+                "status": h.status.value,
+                "total_rooms": total_rooms or 0,
+                "available_rooms": available_rooms or 0,
+                "created_at": h.created_at.strftime("%d/%m/%Y %H:%M"),
+                "updated_at": h.updated_at.strftime("%d/%m/%Y %H:%M"),
             }
-            for hotel in hotels
+            for h, total_rooms, available_rooms in hotels
         ]
 
-        return pagination_response(
-            data=data,
-            page=page,
-            limit=limit,
-            total=total
-        )
+        return {
+            "success": True,
+            "code": status.HTTP_200_OK,
+            "message": "Success",
+            "data": data
+        }
     except Exception as e:
         logger.exception("Unexpected error in get_hotels. ERROR: " + str(e))
         raise HTTPException(

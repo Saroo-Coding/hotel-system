@@ -31,33 +31,6 @@ export const mockUsers = [
   },
 ];
 
-export const mockHotels = [
-  {
-    id: '1',
-    name: 'Saroo Hotel Downtown',
-    address: '12 Nguyen Hue, District 1, HCMC',
-    city: 'Ho Chi Minh',
-    phone: '+84919642279',
-    email: 'downtown@saroo.com',
-    rating: 4.8,
-    total_rooms: 120,
-    available_rooms: 45,
-    created_at: '2024-01-01T00:00:00Z',
-  },
-  {
-    id: '2',
-    name: 'Saroo Hotel Riverside',
-    address: '456 Le Loi, District 2, HCMC',
-    city: 'Ho Chi Minh',
-    phone: '+84919642280',
-    email: 'riverside@saroo.com',
-    rating: 4.6,
-    total_rooms: 150,
-    available_rooms: 78,
-    created_at: '2024-01-05T00:00:00Z',
-  },
-];
-
 export const mockRooms = [
   {
     id: '1',

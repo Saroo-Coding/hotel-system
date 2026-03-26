@@ -343,6 +343,7 @@
     "rating": "Rating",
     "totalRooms": "Total Rooms",
     "availableRooms": "Available Rooms",
+    "status": "Status",
     "confirmDelete": "Are you sure you want to delete {name}?"
   },
   "rooms": {

@@ -2,7 +2,7 @@
 import { ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import AdminLayout from '@/layouts/AdminLayout.vue';
-import { mockRooms, mockHotels } from '@/mock-data';
+import { mockRooms } from '@/mock-data';
 import { STATUS_COLORS } from '@/utils/constants';
 import { Plus, Edit, Delete } from '@element-plus/icons-vue';
 import { ElMessage, ElMessageBox } from 'element-plus';
@@ -10,9 +10,7 @@ import { ElMessage, ElMessageBox } from 'element-plus';
 const { t } = useI18n();
 
 const rooms = ref(mockRooms);
-const hotels = ref(mockHotels);
 const loading = ref(false);
-const filterHotelId = ref('');
 
 const filteredRooms = ref(rooms);
 
@@ -60,17 +58,6 @@ const handleDelete = (room) => {
           {{ t('admin.common.addNew') }}
         </el-button>
       </div>
-
-      <el-card class="filter-card" shadow="hover">
-        <el-select
-          v-model="filterHotelId"
-          :placeholder="t('admin.rooms.filterByHotel')"
-          clearable
-          @change="handleHotelFilter"
-        >
-          <el-option v-for="hotel in hotels" :key="hotel.id" :label="hotel.name" :value="hotel.id" />
-        </el-select>
-      </el-card>
 
       <el-table :data="filteredRooms" stripe v-loading="loading">
         <el-table-column prop="room_number" :label="t('admin.rooms.roomNumber')" width="120" />

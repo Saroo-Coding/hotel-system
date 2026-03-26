@@ -343,6 +343,7 @@
     "rating": "Xếp hạng",
     "totalRooms": "Tổng phòng",
     "availableRooms": "Phòng có sẵn",
+    "status": "Trạng thái",
     "confirmDelete": "Bạn có chắc chắn muốn xóa {name}?"
   },
   "rooms": {
