@@ -5,7 +5,7 @@ import { useRouter } from "vue-router";
 
 import Header from "@/components/Header.vue";
 import Footer from "@/components/Footer.vue";
-import { listRoom } from "@/api/dashboard.api";
+import { listRoom, searchRooms } from "@/api/dashboard.api";
 import { disablePastDate } from "@/utils/date";
 
 import { ElMessage } from "element-plus";
@@ -37,13 +37,29 @@ const loadRooms = async () => {
   }
 };
 
-const handleSearch = () => {
-  ElMessage.success(
-    t("dashboard.foundMessage", {
-      count: allRooms.value.length,
-      guests: searchForm.guests,
-    }),
-  );
+const handleSearch = async () => {
+  if (!searchForm.dateRange || searchForm.dateRange.length !== 2) {
+    ElMessage.warning(t("dashboard.selectDateRange"));
+    return;
+  }
+
+  try {
+    const res = await searchRooms(
+      searchForm.dateRange[0],
+      searchForm.dateRange[1],
+      searchForm.bedType
+    );
+    allRooms.value = Array.isArray(res?.data) ? res.data : [];
+    ElMessage.success(
+      t("dashboard.foundMessage", {
+        count: allRooms.value.length,
+        guests: searchForm.guests,
+      })
+    );
+  } catch (err) {
+    allRooms.value = [];
+    ElMessage.error(err?.message || t("common.internal_server_error"));
+  }
 };
 
 onMounted(() => {

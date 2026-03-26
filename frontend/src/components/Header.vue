@@ -17,6 +17,7 @@ const activeMenu = computed(() => {
 const onMenuSelect = (key) => {
   if (key === "home") router.push("/");
   if (key === "my-room") router.push("/my-room");
+  if (key === "login") router.push("/login");
 };
 </script>
 
@@ -37,6 +38,7 @@ const onMenuSelect = (key) => {
           <el-sub-menu index="activity">
             <template #title>{{ t("dashboard.activity") }}</template>
             <el-menu-item index="my-room">{{ t("dashboard.myRoom") }}</el-menu-item>
+            <el-menu-item index="login">{{ t("common.login") }}</el-menu-item>
           </el-sub-menu>
         </el-menu>
 

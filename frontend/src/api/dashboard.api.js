@@ -46,3 +46,11 @@ export function createPayment(payload) {
     body: JSON.stringify(payload),
   });
 }
+
+export function searchRooms(checkinDate, checkoutDate, bedType) {
+  let url = `/rooms/search?checkin_date=${checkinDate}&checkout_date=${checkoutDate}`;
+  if (bedType && bedType !== "ALL") {
+    url += `&bed_type=${bedType}`;
+  }
+  return request(url, { method: "GET" });
+}

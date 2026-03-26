@@ -83,6 +83,7 @@
     "bookNow": "Book Now",
     "empty": "No room matches your guest count. Try fewer guests.",
     "foundMessage": "Found {count} room(s) for {guests} guest(s).",
+    "selectDateRange": "Please select check-in and check-out dates",
     "bookedMessage": "Booking: {room} at {hotel}",
     "footerTagline": "Comfortable stays, clear pricing, and easy booking in one place.",
     "footerAddress": "Address: 12 Nguyen Hue Street, District 1, Ho Chi Minh City",

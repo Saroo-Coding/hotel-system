@@ -1,10 +1,14 @@
+from datetime import date
 from uuid import UUID
+
 from fastapi import APIRouter, status, Depends, HTTPException, Query
-from pytest import Session
-from sqlalchemy import String, cast, func, or_
+from sqlalchemy import String, cast, func, not_, or_
+from sqlalchemy.orm import Session
 
 from app.core.database import SessionLocal
 from app.api.deps import check_roles, pagination_response
+from app.api.v1.booking import cleanup_expired_pending_bookings
+from app.models.bookings import Booking, BookingStatus
 from app.models.hotels import Hotel
 from app.models.rooms import BedType, Room, RoomStatus
 from app.models.users import User, UserRole
@@ -87,6 +91,86 @@ def get_list_rooms(
             limit=limit,
             total=total
         )
+
+@router.get("/search")
+def search_rooms(
+    checkin_date: date = Query(...),
+    checkout_date: date = Query(...),
+    bed_type: BedType | None = Query(None),
+    page: int = Query(1, ge=1),
+    limit: int = Query(20, ge=1, le=100),
+    db: Session = Depends(get_db)
+):
+    if checkin_date < date.today():
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="booking.validation.checkinPastNotAllowed",
+        )
+
+    if checkin_date >= checkout_date:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="booking.validation.dateRangeInvalid",
+        )
+
+    cleanup_expired_pending_bookings(db)
+
+    overlapping_room_ids = (
+        db.query(Booking.room_id)
+        .filter(
+            Booking.status.in_(
+                [
+                    BookingStatus.PENDING,
+                    BookingStatus.CONFIRMED,
+                    BookingStatus.CHECKED_IN,
+                ]
+            ),
+            not_(
+                or_(
+                    Booking.checkout_date <= checkin_date,
+                    Booking.checkin_date >= checkout_date,
+                )
+            ),
+        )
+    )
+
+    query = db.query(Room).filter(Room.status == RoomStatus.AVAILABLE)
+
+    if bed_type is not None:
+        query = query.filter(Room.bed_type == bed_type)
+
+    query = query.filter(~Room.id.in_(overlapping_room_ids))
+
+    total = query.count()
+    rooms = (
+        query
+        .order_by(Room.updated_at.desc())
+        .offset((page - 1) * limit)
+        .limit(limit)
+        .all()
+    )
+
+    data = [
+        {
+            "id": str(room.id),
+            "hotel_id": str(room.hotel_id),
+            "room_number": room.room_number,
+            "floor": room.floor,
+            "bed_type": room.bed_type.value,
+            "base_price": int(room.base_price),
+            "status": room.status.value,
+            "description": room.description,
+            "image": room.image,
+        }
+        for room in rooms
+    ]
+
+    return pagination_response(
+        data=data,
+        page=page,
+        limit=limit,
+        total=total,
+    )
 
 @router.get("/room_details")
 def get_room_detail(
