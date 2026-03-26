@@ -9,7 +9,16 @@
     "required": "This field is required",
     "invalid_format": "Invalid format",
     "returnBack": "Return back",
-    "internal_server_error": "Something went wrong. Please try again later"
+    "internal_server_error": "Something went wrong. Please try again later",
+    "addNew": "Add New",
+    "add": "Add",
+    "edit": "Edit",
+    "delete": "Delete",
+    "actions": "Actions",
+    "deleted": "Item deleted successfully",
+    "warning": "Warning",
+    "ok": "OK",
+    "profile": "Profile"
   },
   "error": {
     "INVALID_CREDENTIALS": "Invalid email/phone or password",
@@ -312,6 +321,104 @@
     "title": "Page Not Found",
     "description": "The page or room you are looking for does not exist or may have been removed.",
     "goHome": "Back to Home"
+  },
+  "adminDashboard": {
+    "title": "Dashboard",
+    "subtitle": "Welcome to the Admin Dashboard",
+    "totalBookings": "Total Bookings",
+    "totalRevenue": "Total Revenue",
+    "occupiedRooms": "Occupied Rooms",
+    "availableRooms": "Available Rooms",
+    "todayCheckIns": "Today Check-ins",
+    "todayCheckOuts": "Today Check-outs",
+    "pendingBookings": "Pending Bookings",
+    "bookingTrend": "Booking Trend",
+    "revenueTrend": "Revenue Trend",
+    "chartLoading": "Chart data (mock)"
+  },
+  "hotels": {
+    "name": "Hotel Name",
+    "city": "City",
+    "phone": "Phone",
+    "rating": "Rating",
+    "totalRooms": "Total Rooms",
+    "availableRooms": "Available Rooms",
+    "confirmDelete": "Are you sure you want to delete {name}?"
+  },
+  "rooms": {
+    "roomNumber": "Room Number",
+    "floor": "Floor",
+    "bedType": "Bed Type",
+    "status": "Status",
+    "basePrice": "Base Price",
+    "filterByHotel": "Filter by Hotel",
+    "confirmDelete": "Are you sure you want to delete room {room}?",
+    "available": "Available",
+    "booked": "Booked",
+    "maintenance": "Maintenance"
+  },
+  "bookings": {
+    "code": "Booking Code",
+    "hotel": "Hotel",
+    "room": "Room",
+    "guest": "Guest",
+    "checkInDate": "Check-in Date",
+    "checkOutDate": "Check-out Date",
+    "totalPrice": "Total Price",
+    "status": "Status",
+    "filterByStatus": "Filter by Status",
+    "confirm": "Confirm",
+    "cancelBooking": "Cancel",
+    "confirmed": "Booking confirmed",
+    "cancelled": "Booking cancelled",
+    "pending": "Pending",
+    "checkedIn": "Checked-in",
+    "checkedOut": "Checked-out"
+  },
+  "guests": {
+    "fullName": "Full Name",
+    "email": "Email",
+    "phone": "Phone",
+    "dateOfBirth": "Date of Birth",
+    "createdAt": "Created At",
+    "confirmDelete": "Are you sure you want to delete {name}?"
+  },
+  "users": {
+    "email": "Email",
+    "fullName": "Full Name",
+    "role": "Role",
+    "phone": "Phone",
+    "status": "Status",
+    "active": "Active",
+    "inactive": "Inactive",
+    "lock": "Lock",
+    "unlock": "Unlock",
+    "locked": "User locked",
+    "unlocked": "User unlocked",
+    "confirmDelete": "Are you sure you want to delete {name}?"
+  },
+  "reports": {
+    "totalBookings": "Total Bookings",
+    "pending": "Pending",
+    "confirmed": "Confirmed",
+    "checkedIn": "Checked In",
+    "checkedOut": "Checked Out",
+    "cancelled": "Cancelled",
+    "weeklyRevenue": "Weekly Revenue (VND)",
+    "weeklyBookings": "Weekly Bookings",
+    "bookingsByDate": "Bookings by Date",
+    "date": "Date",
+    "bookingsCount": "Bookings",
+    "revenueAmount": "Revenue"
+  },
+  "admin": {
+    "dashboard": "Dashboard",
+    "hotels": "Hotels",
+    "rooms": "Rooms",
+    "bookings": "Bookings",
+    "guests": "Guests",
+    "users": "Users",
+    "reports": "Reports"
   }
 }
 

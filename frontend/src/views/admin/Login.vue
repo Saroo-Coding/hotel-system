@@ -49,7 +49,7 @@ const submit = async () => {
 
   try {
     await authStore.login(data);
-    router.push("/");
+    router.push("/admin/dashboard");
   } catch (err) {
     if (err?.error) {
       errors.value = err.error;

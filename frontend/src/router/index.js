@@ -28,12 +28,12 @@ const router = createRouter({
     },
     {
       path: "/login",
-      component: () => import("@/views/Login.vue"),
+      component: () => import("@/views/admin/Login.vue"),
       meta: { public: true },
     },
     {
       path: "/register",
-      component: () => import("@/views/Register.vue"),
+      component: () => import("@/views/admin/Register.vue"),
       meta: { public: true },
     },
     {
@@ -44,25 +44,44 @@ const router = createRouter({
     },
     {
       path: "/admin",
-      meta: { roles: ["ADMIN"] },
+      redirect: "/admin/dashboard",
+      meta: { roles: ["ADMIN", "MANAGER", "STAFF"] },
       children: [
-        // { path: "dashboard", component: () => import("@/pages/admin/Dashboard.vue") },
-        // { path: "users", component: () => import("@/pages/admin/Users.vue") },
-        // { path: "hotels", component: () => import("@/pages/admin/Hotels.vue") },
-        // { path: "hotels/:id", component: () => import("@/pages/admin/HotelDetail.vue") },
-        // { path: "rooms", component: () => import("@/pages/admin/Rooms.vue") },
-        // { path: "guests", component: () => import("@/pages/admin/Guests.vue") }
-      ],
-    },
-    {
-      path: "/staff",
-      meta: { roles: ["STAFF"] },
-      children: [
-        // { path: "dashboard", component: () => import("@/pages/staff/Dashboard.vue") },
-        // { path: "check-in", component: () => import("@/pages/staff/CheckIn.vue") },
-        // { path: "check-out", component: () => import("@/pages/staff/CheckOut.vue") },
-        // { path: "guests", component: () => import("@/pages/staff/Guests.vue") },
-        // { path: "rooms", component: () => import("@/pages/staff/Rooms.vue") }
+        {
+          path: "dashboard",
+          component: () => import("@/views/admin/Dashboard.vue"),
+          meta: { roles: ["ADMIN", "MANAGER", "STAFF"] },
+        },
+        {
+          path: "hotels",
+          component: () => import("@/views/admin/Hotels.vue"),
+          meta: { roles: ["ADMIN", "MANAGER"] },
+        },
+        {
+          path: "rooms",
+          component: () => import("@/views/admin/Rooms.vue"),
+          meta: { roles: ["ADMIN", "MANAGER", "STAFF"] },
+        },
+        {
+          path: "bookings",
+          component: () => import("@/views/admin/Bookings.vue"),
+          meta: { roles: ["ADMIN", "MANAGER", "STAFF"] },
+        },
+        {
+          path: "guests",
+          component: () => import("@/views/admin/Guests.vue"),
+          meta: { roles: ["ADMIN", "MANAGER", "STAFF"] },
+        },
+        {
+          path: "users",
+          component: () => import("@/views/admin/Users.vue"),
+          meta: { roles: ["ADMIN"] },
+        },
+        {
+          path: "reports",
+          component: () => import("@/views/admin/Reports.vue"),
+          meta: { roles: ["ADMIN", "MANAGER"] },
+        },
       ],
     },
     {
@@ -81,7 +100,7 @@ router.beforeEach(async (to, from, next) => {
   const authStore = useAuthStore();
 
   if (to.path === "/login" && authStore.token) {
-    return next("/");
+    return next("/admin/dashboard");
   }
 
   if (to.meta.public) {
@@ -101,8 +120,17 @@ router.beforeEach(async (to, from, next) => {
     }
   }
 
+  // Check role-based access
   if (to.meta.roles) {
     if (!to.meta.roles.includes(authStore.user.role)) {
+      return next("/forbidden");
+    }
+  }
+
+  // Check parent route roles for nested routes
+  const matchedRoute = to.matched.find((record) => record.meta.roles);
+  if (matchedRoute && matchedRoute.meta.roles) {
+    if (!matchedRoute.meta.roles.includes(authStore.user.role)) {
       return next("/forbidden");
     }
   }

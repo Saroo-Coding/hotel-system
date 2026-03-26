@@ -9,7 +9,16 @@
     "required": "Trường này là bắt buộc",
     "invalid_format": "Định dạng không hợp lệ",
     "returnBack": "Quay lại",
-    "internal_server_error": "Đã xảy ra lỗi. Vui lòng thử lại sau"
+    "internal_server_error": "Đã xảy ra lỗi. Vui lòng thử lại sau",
+    "addNew": "Thêm mới",
+    "add": "Thêm",
+    "edit": "Chỉnh sửa",
+    "delete": "Xóa",
+    "actions": "Hành động",
+    "deleted": "Xóa thành công",
+    "warning": "Cảnh báo",
+    "ok": "OK",
+    "profile": "Hồ sơ"
   },
   "error": {
     "INVALID_CREDENTIALS": "Email/số điện thoại hoặc mật khẩu không đúng",
@@ -312,5 +321,103 @@
     "title": "Không tìm thấy trang",
     "description": "Trang hoặc phòng bạn tìm không tồn tại hoặc đã bị xóa.",
     "goHome": "Về trang chủ"
+  },
+  "adminDashboard": {
+    "title": "Bảng điều khiển",
+    "subtitle": "Chào mừng đến bảng điều khiển quản trị",
+    "totalBookings": "Tổng đặt phòng",
+    "totalRevenue": "Tổng doanh thu",
+    "occupiedRooms": "Phòng đã sử dụng",
+    "availableRooms": "Phòng có sẵn",
+    "todayCheckIns": "Check-in hôm nay",
+    "todayCheckOuts": "Check-out hôm nay",
+    "pendingBookings": "Đặt phòng chờ xử lý",
+    "bookingTrend": "Xu hướng đặt phòng",
+    "revenueTrend": "Xu hướng doanh thu",
+    "chartLoading": "Dữ liệu biểu đồ (mô phỏng)"
+  },
+  "hotels": {
+    "name": "Tên khách sạn",
+    "city": "Thành phố",
+    "phone": "Điện thoại",
+    "rating": "Xếp hạng",
+    "totalRooms": "Tổng phòng",
+    "availableRooms": "Phòng có sẵn",
+    "confirmDelete": "Bạn có chắc chắn muốn xóa {name}?"
+  },
+  "rooms": {
+    "roomNumber": "Số phòng",
+    "floor": "Tầng",
+    "bedType": "Loại giường",
+    "status": "Trạng thái",
+    "basePrice": "Giá cơ bản",
+    "filterByHotel": "Lọc theo khách sạn",
+    "confirmDelete": "Bạn có chắc chắn muốn xóa phòng {room}?",
+    "available": "Có sẵn",
+    "booked": "Đã đặt",
+    "maintenance": "Bảo trì"
+  },
+  "bookings": {
+    "code": "Mã đặt phòng",
+    "hotel": "Khách sạn",
+    "room": "Phòng",
+    "guest": "Khách hàng",
+    "checkInDate": "Ngày nhận phòng",
+    "checkOutDate": "Ngày trả phòng",
+    "totalPrice": "Tổng tiền",
+    "status": "Trạng thái",
+    "filterByStatus": "Lọc theo trạng thái",
+    "confirm": "Xác nhận",
+    "cancelBooking": "Hủy",
+    "confirmed": "Đặt phòng đã xác nhận",
+    "cancelled": "Đặt phòng đã hủy",
+    "pending": "Chờ xử lý",
+    "checkedIn": "Đã nhận phòng",
+    "checkedOut": "Đã trả phòng"
+  },
+  "guests": {
+    "fullName": "Họ và tên",
+    "email": "Email",
+    "phone": "Điện thoại",
+    "dateOfBirth": "Ngày sinh",
+    "createdAt": "Ngày tạo",
+    "confirmDelete": "Bạn có chắc chắn muốn xóa {name}?"
+  },
+  "users": {
+    "email": "Email",
+    "fullName": "Họ và tên",
+    "role": "Vai trò",
+    "phone": "Điện thoại",
+    "status": "Trạng thái",
+    "active": "Hoạt động",
+    "inactive": "Không hoạt động",
+    "lock": "Khóa",
+    "unlock": "Mở khóa",
+    "locked": "Người dùng đã bị khóa",
+    "unlocked": "Người dùng đã được mở khóa",
+    "confirmDelete": "Bạn có chắc chắn muốn xóa {name}?"
+  },
+  "reports": {
+    "totalBookings": "Tổng đặt phòng",
+    "pending": "Chờ xử lý",
+    "confirmed": "Đã xác nhận",
+    "checkedIn": "Đã nhận phòng",
+    "checkedOut": "Đã trả phòng",
+    "cancelled": "Đã hủy",
+    "weeklyRevenue": "Doanh thu hàng tuần (VND)",
+    "weeklyBookings": "Đặt phòng hàng tuần",
+    "bookingsByDate": "Đặt phòng theo ngày",
+    "date": "Ngày",
+    "bookingsCount": "Đặt phòng",
+    "revenueAmount": "Doanh thu"
+  },
+  "admin": {
+    "dashboard": "Bảng điều khiển",
+    "hotels": "Khách sạn",
+    "rooms": "Phòng",
+    "bookings": "Đặt phòng",
+    "guests": "Khách hàng",
+    "users": "Người dùng",
+    "reports": "Báo cáo"
   }
 }
