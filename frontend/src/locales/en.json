@@ -211,8 +211,14 @@
       "bookingInfoTitle": "Booking information",
       "paymentTitle": "Payment",
       "paymentMethod": "Payment method",
+      "payNow": "Pay now",
       "checkinDate": "Check-in date",
       "checkoutDate": "Check-out date",
+      "guestIdNumber": "Document number",
+      "bookingToken": "Booking token",
+      "qrTitle": "Check-in QR",
+      "qrAlt": "Booking QR code",
+      "qrUnavailable": "QR code is not available right now.",
       "goHomeNow": "Back to homepage now",
       "missingCode": "Missing booking code",
       "notFound": "Booking was not found",
@@ -289,6 +295,16 @@
         "CANCELLED": "This booking has been cancelled.",
         "NO_SHOW": "This booking was marked as no-show."
       }
+    }
+  },
+  "payment": {
+    "validation": {
+      "invalidMethod": "Invalid payment method"
+    },
+    "messages": {
+      "completed": "Payment completed successfully.",
+      "bookingNotPending": "Only pending bookings can be paid.",
+      "alreadyPaid": "This booking has already been paid."
     }
   },
   "notFound": {

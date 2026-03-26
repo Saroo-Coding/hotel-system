@@ -6,7 +6,7 @@ import { useRoute, useRouter } from "vue-router";
 
 import Header from "@/components/Header.vue";
 import Footer from "@/components/Footer.vue";
-import { cancelBooking, searchBookingByCode } from "@/api/dashboard.api";
+import { cancelBooking, createPayment, searchBookingByCode } from "@/api/dashboard.api";
 
 const route = useRoute();
 const router = useRouter();
@@ -16,6 +16,7 @@ const countdown = ref(0);
 let timer = null;
 const selectedPaymentMethod = ref("bank_transfer");
 const loading = ref(false);
+const paymentSubmitting = ref(false);
 const searchCode = ref("");
 const bookingData = ref({
   id: "",
@@ -25,11 +26,15 @@ const bookingData = ref({
   checkinDate: "",
   checkoutDate: "",
   totalPrice: "",
+  guestIdNumber: "",
+  bookingToken: "",
+  bookingTokenQr: "",
 });
 
 const bookingCode = computed(() => String(route.params.bookingCode || "").trim().toUpperCase());
 const hasResult = computed(() => Boolean(bookingData.value.id));
 const isPending = computed(() => bookingData.value.status === "PENDING");
+const isConfirmed = computed(() => bookingData.value.status === "CONFIRMED");
 
 const formatDate = (value) => {
   if (!value) return "--";
@@ -65,18 +70,21 @@ const countdownDisplay = computed(() => {
 const paymentMethods = computed(() => [
   {
     id: "bank_transfer",
+    apiValue: "BANK_TRANSFER",
     badge: "BANK",
     name: t("booking.pending.methodOptions.bank_transfer"),
     description: t("booking.pending.methodDescriptions.bank_transfer"),
   },
   {
     id: "credit_card",
+    apiValue: "CREDIT_CARD",
     badge: "CARD",
     name: t("booking.pending.methodOptions.credit_card"),
     description: t("booking.pending.methodDescriptions.credit_card"),
   },
   {
     id: "e_wallet",
+    apiValue: "MOBILE_PAYMENT",
     badge: "WALLET",
     name: t("booking.pending.methodOptions.e_wallet"),
     description: t("booking.pending.methodDescriptions.e_wallet"),
@@ -166,6 +174,9 @@ const loadBookingPending = async (code) => {
       checkinDate: res?.checkin_date || "",
       checkoutDate: res?.checkout_date || "",
       totalPrice: String(res?.total_price ?? ""),
+      guestIdNumber: res?.guest_id_number || "",
+      bookingToken: res?.booking_token || "",
+      bookingTokenQr: res?.booking_token_qr || "",
     };
     countdown.value = Number(res?.remaining_seconds || 0);
   } catch (err) {
@@ -178,6 +189,9 @@ const loadBookingPending = async (code) => {
       checkinDate: "",
       checkoutDate: "",
       totalPrice: "",
+      guestIdNumber: "",
+      bookingToken: "",
+      bookingTokenQr: "",
     };
     countdown.value = 0;
     return;
@@ -214,6 +228,30 @@ const handleSearch = async () => {
   router.push({ name: "my-room-code", params: { bookingCode: normalizedCode } });
 };
 
+const handlePayment = async () => {
+  if (!bookingData.value.id || !isPending.value || paymentSubmitting.value) return;
+
+  const selectedMethod = paymentMethods.value.find((method) => method.id === selectedPaymentMethod.value);
+  if (!selectedMethod) {
+    ElMessage.warning(t("payment.validation.invalidMethod"));
+    return;
+  }
+
+  paymentSubmitting.value = true;
+  try {
+    const res = await createPayment({
+      booking_id: bookingData.value.id,
+      method: selectedMethod.apiValue,
+    });
+    ElMessage.success(t(res?.message || "payment.messages.completed"));
+    await loadBookingPending(bookingData.value.code);
+  } catch (err) {
+    ElMessage.error(toI18nMessage(err, "common.internal_server_error"));
+  } finally {
+    paymentSubmitting.value = false;
+  }
+};
+
 const handleCancelBooking = async () => {
   if (!bookingData.value.code || !isPending.value) return;
 
@@ -238,6 +276,9 @@ const handleCancelBooking = async () => {
       checkinDate: "",
       checkoutDate: "",
       totalPrice: "",
+      guestIdNumber: "",
+      bookingToken: "",
+      bookingTokenQr: "",
     };
     countdown.value = 0;
     searchCode.value = "";
@@ -332,6 +373,11 @@ onBeforeUnmount(() => {
                 <span>{{ t("booking.pending.paymentStatus") }}</span>
                 <strong>{{ paymentLabel }}</strong>
               </div>
+
+              <div v-if="bookingData.guestIdNumber" class="info-item">
+                <span>{{ t("booking.pending.guestIdNumber") }}</span>
+                <strong>{{ bookingData.guestIdNumber }}</strong>
+              </div>
             </div>
           </div>
 
@@ -366,6 +412,33 @@ onBeforeUnmount(() => {
                 <span>{{ item.label }}</span>
                 <strong>{{ item.value }}</strong>
               </div>
+            </div>
+
+            <el-button
+              type="primary"
+              class="pay-btn"
+              :loading="paymentSubmitting"
+              :disabled="paymentSubmitting"
+              @click="handlePayment"
+            >
+              {{ t("booking.pending.payNow") }}
+            </el-button>
+          </div>
+
+          <div v-else-if="isConfirmed" class="panel qr-panel">
+            <h2 class="panel-title">{{ t("booking.pending.qrTitle") }}</h2>
+            <div class="qr-box">
+              <img
+                v-if="bookingData.bookingTokenQr"
+                :src="bookingData.bookingTokenQr"
+                :alt="t('booking.pending.qrAlt')"
+              />
+              <div v-else class="qr-fallback">{{ t("booking.pending.qrUnavailable") }}</div>
+            </div>
+
+            <div class="token-box">
+              <span>{{ t("booking.pending.bookingToken") }}</span>
+              <strong>{{ bookingData.bookingToken || "--" }}</strong>
             </div>
           </div>
 
@@ -670,6 +743,62 @@ h1 {
 .fake-row strong {
   color: var(--text-primary);
   font-size: 13px;
+}
+
+.pay-btn {
+  min-height: 44px;
+  border: none;
+  border-radius: 12px;
+  font-weight: 700;
+  background: linear-gradient(135deg, var(--primary), var(--primary-hover));
+  box-shadow: 0 12px 20px color-mix(in srgb, var(--primary) 22%, transparent);
+}
+
+.qr-panel {
+  display: grid;
+  align-content: start;
+  gap: 14px;
+}
+
+.qr-box {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 280px;
+  padding: 16px;
+  border-radius: 16px;
+  border: 1px solid var(--border-color);
+  background: linear-gradient(180deg, #ffffff 0%, #f6f1e8 100%);
+}
+
+.qr-box img {
+  width: min(100%, 260px);
+  height: auto;
+  object-fit: contain;
+}
+
+.qr-fallback {
+  color: var(--text-secondary);
+  text-align: center;
+}
+
+.token-box {
+  padding: 14px;
+  border-radius: 14px;
+  border: 1px solid var(--border-color);
+  background: color-mix(in srgb, var(--primary) 7%, var(--card-surface));
+}
+
+.token-box span {
+  display: block;
+  margin-bottom: 6px;
+  color: var(--text-secondary);
+}
+
+.token-box strong {
+  display: block;
+  color: var(--text-primary);
+  word-break: break-all;
 }
 
 .theme-orb {

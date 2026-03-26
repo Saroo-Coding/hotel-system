@@ -5,6 +5,7 @@ from app.api.v1.hotels import router as hotels_router
 from app.api.v1.rooms import router as rooms_router
 from app.api.v1.guests import router as guests_router
 from app.api.v1.booking import router as booking_router
+from app.api.v1.payments import router as payments_router
 
 api_router = APIRouter()
 api_router.include_router(auth_router, tags=["Auth"], prefix="/auth")
@@ -13,6 +14,7 @@ api_router.include_router(guests_router, tags=["Guests"], prefix=("/guests"))
 api_router.include_router(hotels_router, tags=["Hotels"], prefix="/hotels")
 api_router.include_router(rooms_router, tags=["Rooms"], prefix="/rooms")
 api_router.include_router(booking_router, tags=["Bookings"], prefix="/bookings")
+api_router.include_router(payments_router, tags=["Payments"], prefix="/payments")
 
 # TODO: validate lại hết các schemas
 # TODO: gửi email thông báo mật khẩu tạm thời

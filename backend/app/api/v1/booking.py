@@ -2,8 +2,12 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy import not_, or_
 from sqlalchemy.orm import Session
 from datetime import date, datetime, timedelta, timezone
+import base64
+import io
+import re
 import secrets
 import string
+import qrcode
 
 from app.core.database import SessionLocal
 from app.models.bookings import Booking, BookingStatus
@@ -25,8 +29,19 @@ def generate_booking_code() -> str:
     )
 
 
-def generate_checkin_token() -> str:
-    return secrets.token_urlsafe(32)
+def generate_checkin_token(id_number: str, checkin_date: date) -> str:
+    normalized_id = re.sub(r"[^A-Za-z0-9]", "", str(id_number or "").upper())[:20] or "GUEST"
+    checkin_part = checkin_date.strftime("%Y%m%d")
+    random_part = secrets.token_urlsafe(12)
+    return f"{normalized_id}-{checkin_part}-{random_part}"
+
+
+def build_qr_code_data_url(token: str) -> str:
+    qr_image = qrcode.make(token)
+    buffer = io.BytesIO()
+    qr_image.save(buffer, format="PNG")
+    encoded = base64.b64encode(buffer.getvalue()).decode("ascii")
+    return f"data:image/png;base64,{encoded}"
 
 
 def get_db():
@@ -181,7 +196,7 @@ def create_booking(
 
             checkin_token_value = None
             for _ in range(10):
-                candidate = generate_checkin_token()
+                candidate = generate_checkin_token(guest.id_number, payload.checkin_date)
                 token_exists = db.query(CheckinToken.id).filter(CheckinToken.token == candidate).first()
                 if not token_exists:
                     checkin_token_value = candidate
@@ -234,11 +249,12 @@ def search_booking_by_code(
         )
 
     result = (
-        db.query(Booking, CheckinToken)
+        db.query(Booking, CheckinToken, Guest)
         .join(
             CheckinToken,
             CheckinToken.booking_id == Booking.id,
         )
+        .join(Guest, Guest.id == Booking.guest_id)
         .filter(
             Booking.booking_code == normalized_code,
             CheckinToken.type == CheckinTokenType.CHECKIN,
@@ -252,7 +268,7 @@ def search_booking_by_code(
             detail="booking.pending.notFound",
         )
 
-    booking, checkin_token = result
+    booking, checkin_token, guest = result
     expires_at = checkin_token.expires_at
     if expires_at.tzinfo is None:
         expires_at = expires_at.replace(tzinfo=timezone.utc)
@@ -295,9 +311,12 @@ def search_booking_by_code(
         "booking_code": booking.booking_code,
         "status": booking.status.value,
         "payment_status": payment_status,
+        "guest_id_number": guest.id_number,
         "checkin_date": booking.checkin_date.isoformat(),
         "checkout_date": booking.checkout_date.isoformat(),
         "total_price": int(booking.total_price),
+        "booking_token": checkin_token.token,
+        "booking_token_qr": build_qr_code_data_url(checkin_token.token),
         "expires_at": expires_at.isoformat(),
         "remaining_seconds": max(remaining_seconds, 0),
     }

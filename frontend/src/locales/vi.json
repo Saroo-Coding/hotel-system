@@ -211,8 +211,14 @@
       "bookingInfoTitle": "Thông tin đặt phòng",
       "paymentTitle": "Thanh toán",
       "paymentMethod": "Phương thức thanh toán",
+      "payNow": "Thanh toán ngay",
       "checkinDate": "Ngày nhận phòng",
       "checkoutDate": "Ngày trả phòng",
+      "guestIdNumber": "Mã giấy tờ",
+      "bookingToken": "Mã booking token",
+      "qrTitle": "Mã QR nhận phòng",
+      "qrAlt": "Mã QR đặt phòng",
+      "qrUnavailable": "Hiện chưa thể tạo mã QR.",
       "goHomeNow": "Về trang chủ ngay",
       "missingCode": "Thiếu mã đặt phòng",
       "notFound": "Không tìm thấy thông tin đặt phòng",
@@ -289,6 +295,16 @@
         "CANCELLED": "Đặt phòng này đã bị hủy.",
         "NO_SHOW": "Đặt phòng này được ghi nhận là khách không đến."
       }
+    }
+  },
+  "payment": {
+    "validation": {
+      "invalidMethod": "Phương thức thanh toán không hợp lệ"
+    },
+    "messages": {
+      "completed": "Thanh toán thành công.",
+      "bookingNotPending": "Chỉ có thể thanh toán booking đang chờ xử lý.",
+      "alreadyPaid": "Booking này đã được thanh toán."
     }
   },
   "notFound": {

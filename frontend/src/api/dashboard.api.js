@@ -39,3 +39,10 @@ export function cancelBooking(bookingCode) {
     method: "DELETE",
   });
 }
+
+export function createPayment(payload) {
+  return request("/payments", {
+    method: "POST",
+    body: JSON.stringify(payload),
+  });
+}
