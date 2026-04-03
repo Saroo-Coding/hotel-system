@@ -6,7 +6,7 @@ from sqlalchemy import String, cast, func, not_, or_
 from sqlalchemy.orm import Session
 
 from app.core.database import SessionLocal
-from app.api.deps import check_roles, pagination_response
+from app.api.deps import check_roles
 from app.api.v1.booking import cleanup_expired_pending_bookings
 from app.models.bookings import Booking, BookingStatus
 from app.models.hotels import Hotel
@@ -28,9 +28,7 @@ def get_db():
 
 @router.get("/list_room")
 def get_list_rooms(
-    page: int = Query(1, ge=1),
-    limit: int = Query(20, ge=1, le=100),
-    hotel_id: str | None = Query(None),
+    hotel_id: UUID | None = Query(None),
     bed_type: BedType | None = Query(None),
     status_room: RoomStatus | None = Query(None),
     keyword: str | None = Query(None),
@@ -60,13 +58,9 @@ def get_list_rooms(
                 )
             )
 
-    total = query.count()
-
     rooms = (
         query
         .order_by(Room.updated_at.desc())
-        .offset((page - 1) * limit)
-        .limit(limit)
         .all()
     )
 
@@ -85,20 +79,18 @@ def get_list_rooms(
         for room in rooms
     ]
 
-    return pagination_response(
-            data=data,
-            page=page,
-            limit=limit,
-            total=total
-        )
+    return {
+        "success": True,
+        "code": status.HTTP_200_OK,
+        "message": "Success",
+        "data": data,
+    }
 
 @router.get("/search")
 def search_rooms(
     checkin_date: date = Query(...),
     checkout_date: date = Query(...),
     bed_type: BedType | None = Query(None),
-    page: int = Query(1, ge=1),
-    limit: int = Query(20, ge=1, le=100),
     db: Session = Depends(get_db)
 ):
     if checkin_date < date.today():
@@ -141,12 +133,9 @@ def search_rooms(
 
     query = query.filter(~Room.id.in_(overlapping_room_ids))
 
-    total = query.count()
     rooms = (
         query
         .order_by(Room.updated_at.desc())
-        .offset((page - 1) * limit)
-        .limit(limit)
         .all()
     )
 
@@ -165,12 +154,12 @@ def search_rooms(
         for room in rooms
     ]
 
-    return pagination_response(
-        data=data,
-        page=page,
-        limit=limit,
-        total=total,
-    )
+    return {
+        "success": True,
+        "code": status.HTTP_200_OK,
+        "message": "Success",
+        "data": data,
+    }
 
 @router.get("/room_details")
 def get_room_detail(
@@ -244,6 +233,8 @@ def admin_create_room(
             "code": status.HTTP_200_OK,
             "message": "Success"
         }
+    except HTTPException:
+        raise
     except Exception as e:
         db.rollback()
         logger.exception("Unexpected error in admin_create_room. ERROR: " + str(e))
@@ -268,11 +259,12 @@ def update_room(
                 detail="Room not found"
             )
         
-        if not db.query(Hotel).filter(Hotel.id == str(payload.hotel_id)).first():
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="Hotel not found"
-            )
+        if payload.hotel_id is not None:
+            if not db.query(Hotel).filter(Hotel.id == payload.hotel_id).first():
+                raise HTTPException(
+                    status_code=status.HTTP_404_NOT_FOUND,
+                    detail="Hotel not found"
+                )
 
         update_data = payload.model_dump(exclude_unset=True) # Only fields provided in the request body
 
@@ -290,6 +282,8 @@ def update_room(
                 "id": room.id
             }
         }
+    except HTTPException:
+        raise
     except Exception as e:
         db.rollback()
         logger.exception("Unexpected error in update_room. ERROR: " + str(e))
@@ -359,5 +353,3 @@ def room_available(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, 
             detail="Internal Server Error"
         )
-
-

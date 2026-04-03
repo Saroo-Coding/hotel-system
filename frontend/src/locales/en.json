@@ -350,13 +350,42 @@
     "roomNumber": "Room Number",
     "floor": "Floor",
     "bedType": "Bed Type",
+    "hotel": "Hotel",
     "status": "Status",
     "basePrice": "Base Price",
+    "description": "Description",
+    "image": "Image URL",
+    "refresh": "Refresh",
     "filterByHotel": "Filter by Hotel",
     "confirmDelete": "Are you sure you want to delete room {room}?",
+    "confirmMaintenance": "Mark room {room} as maintenance?",
+    "confirmAvailable": "Mark room {room} as available?",
     "available": "Available",
     "booked": "Booked",
-    "maintenance": "Maintenance"
+    "maintenance": "Maintenance",
+    "dialog": {
+      "createTitle": "Create Room",
+      "editTitle": "Edit Room"
+    },
+    "messages": {
+      "created": "Room created successfully",
+      "updated": "Room updated successfully",
+      "deleted": "Room deleted successfully",
+      "markedMaintenance": "Room has been moved to maintenance status",
+      "alreadyMaintenance": "This room is already in maintenance status",
+      "markedAvailable": "Room has been moved to available status",
+      "bookedStatusLocked": "Booked room cannot be changed here"
+    },
+    "validation": {
+      "hotelRequired": "Please select hotel",
+      "hotelInvalid": "Hotel id is invalid",
+      "roomNumberRequired": "Please enter room number",
+      "floorRequired": "Please enter floor",
+      "bedTypeRequired": "Please select bed type",
+      "basePriceRequired": "Please enter base price",
+      "basePriceInvalid": "Base price must be a whole positive number",
+      "statusRequired": "Please select status"
+    }
   },
   "bookings": {
     "code": "Booking Code",
@@ -422,4 +451,3 @@
     "reports": "Reports"
   }
 }
-

@@ -55,7 +55,7 @@ const router = createRouter({
         {
           path: "hotels",
           component: () => import("@/views/admin/Hotels.vue"),
-          meta: { roles: ["ADMIN", "MANAGER"] },
+          meta: { roles: ["ADMIN", "STAFF"] },
         },
         {
           path: "rooms",

@@ -350,13 +350,42 @@
     "roomNumber": "Số phòng",
     "floor": "Tầng",
     "bedType": "Loại giường",
+    "hotel": "Khách sạn",
     "status": "Trạng thái",
     "basePrice": "Giá cơ bản",
+    "description": "Mô tả",
+    "image": "Đường dẫn ảnh",
+    "refresh": "Tải lại",
     "filterByHotel": "Lọc theo khách sạn",
     "confirmDelete": "Bạn có chắc chắn muốn xóa phòng {room}?",
+    "confirmMaintenance": "Chuyển phòng {room} sang trạng thái bảo trì?",
+    "confirmAvailable": "Chuyển phòng {room} sang trạng thái có sẵn?",
     "available": "Có sẵn",
     "booked": "Đã đặt",
-    "maintenance": "Bảo trì"
+    "maintenance": "Bảo trì",
+    "dialog": {
+      "createTitle": "Tạo phòng",
+      "editTitle": "Cập nhật phòng"
+    },
+    "messages": {
+      "created": "Tạo phòng thành công",
+      "updated": "Cập nhật phòng thành công",
+      "deleted": "Xóa phòng thành công",
+      "markedMaintenance": "Phòng đã được chuyển sang trạng thái bảo trì",
+      "alreadyMaintenance": "Phòng này đang ở trạng thái bảo trì",
+      "markedAvailable": "Phòng đã được chuyển sang trạng thái có sẵn",
+      "bookedStatusLocked": "Không thể đổi trạng thái phòng đã đặt tại đây"
+    },
+    "validation": {
+      "hotelRequired": "Vui lòng chọn khách sạn",
+      "hotelInvalid": "Mã khách sạn không hợp lệ",
+      "roomNumberRequired": "Vui lòng nhập số phòng",
+      "floorRequired": "Vui lòng nhập tầng",
+      "bedTypeRequired": "Vui lòng chọn loại giường",
+      "basePriceRequired": "Vui lòng nhập giá cơ bản",
+      "basePriceInvalid": "Giá cơ bản phải là số nguyên dương",
+      "statusRequired": "Vui lòng chọn trạng thái"
+    }
   },
   "bookings": {
     "code": "Mã đặt phòng",

@@ -4,8 +4,6 @@ from enum import Enum
 from typing import Optional
 from decimal import Decimal
 
-from app.core.validators import validate_not_empty, validate_vnd_decimal, validate_positive_number
-
 class RoomStatus(str, Enum):
     AVAILABLE = "AVAILABLE"
     MAINTENANCE = "MAINTENANCE"
@@ -16,29 +14,58 @@ class BedType(str, Enum):
     DOUBLE = "DOUBLE"
 
 class AdminCreateRoom(BaseModel):
-    hotel_id: Optional[UUID]
-    room_number: Optional[str]
-    floor: Optional[int]
-    bed_type: Optional[BedType]
-    base_price: Optional[Decimal]
-    status: Optional[RoomStatus]
-    description: Optional[str]
+    hotel_id: UUID
+    room_number: str
+    floor: int
+    bed_type: BedType
+    base_price: Decimal
+    status: RoomStatus
+    description: Optional[str] = None
 
-    @field_validator("hotel_id")
+    @field_validator("hotel_id", mode="before")
     @classmethod
     def validate_id(cls, v):
-        return validate_not_empty(v, "Hotel ID")
+        if isinstance(v, UUID):
+            return v
+        if isinstance(v, str):
+            value = v.strip()
+            if not value:
+                raise ValueError("rooms.validation.hotelRequired")
+            try:
+                return UUID(value)
+            except ValueError:
+                raise ValueError("rooms.validation.hotelInvalid")
+        raise ValueError("rooms.validation.hotelInvalid")
+
+    @field_validator("room_number", mode="before")
+    @classmethod
+    def validate_room_number(cls, v):
+        if not isinstance(v, str):
+            raise ValueError("rooms.validation.roomNumberRequired")
+        value = v.strip()
+        if not value:
+            raise ValueError("rooms.validation.roomNumberRequired")
+        return value
 
     @field_validator('floor')
     @classmethod
     def validate_floor(cls, v):
-        return validate_positive_number(v, "Floor")
+        if v is None:
+            raise ValueError("rooms.validation.floorRequired")
+        if v <= 0:
+            raise ValueError("rooms.validation.floorRequired")
+        return v
 
     @field_validator('base_price')
     @classmethod
     def validate_base_price(cls, v):
-        validate_positive_number(v, "Price")
-        return validate_vnd_decimal(v)
+        if v is None:
+            raise ValueError("rooms.validation.basePriceRequired")
+        if v <= 0:
+            raise ValueError("rooms.validation.basePriceRequired")
+        if v.as_tuple().exponent != 0:
+            raise ValueError("rooms.validation.basePriceInvalid")
+        return v
     
 class AdminUpdateRoom(BaseModel):
     hotel_id: Optional[UUID] = None
@@ -48,21 +75,52 @@ class AdminUpdateRoom(BaseModel):
     base_price: Optional[Decimal] = None
     status: Optional[RoomStatus] = None
     description: Optional[str] = None
+
+    @field_validator("hotel_id", mode="before")
+    @classmethod
+    def validate_update_hotel_id(cls, v):
+        if v is None:
+            return v
+        if isinstance(v, UUID):
+            return v
+        if isinstance(v, str):
+            value = v.strip()
+            if not value:
+                raise ValueError("rooms.validation.hotelRequired")
+            try:
+                return UUID(value)
+            except ValueError:
+                raise ValueError("rooms.validation.hotelInvalid")
+        raise ValueError("rooms.validation.hotelInvalid")
     
-    @field_validator("room_number")
+    @field_validator("room_number", mode="before")
     @classmethod
     def full_name_validate(cls, v):
         if v is None:
             return v
-        return validate_not_empty(v, "Room number")
+        if not isinstance(v, str):
+            raise ValueError("rooms.validation.roomNumberRequired")
+        value = v.strip()
+        if not value:
+            raise ValueError("rooms.validation.roomNumberRequired")
+        return value
 
     @field_validator('floor')
     @classmethod
     def validate_floor(cls, v):
-        return validate_positive_number(v, "Floor")
+        if v is None:
+            return v
+        if v <= 0:
+            raise ValueError("rooms.validation.floorRequired")
+        return v
 
     @field_validator('base_price')
     @classmethod
     def validate_base_price(cls, v):
-        validate_positive_number(v, "Price")
-        return validate_vnd_decimal(v)
+        if v is None:
+            return v
+        if v <= 0:
+            raise ValueError("rooms.validation.basePriceRequired")
+        if v.as_tuple().exponent != 0:
+            raise ValueError("rooms.validation.basePriceInvalid")
+        return v

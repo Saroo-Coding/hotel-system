@@ -4,6 +4,44 @@ export function listRoom() {
   return request("/rooms/list_room", { method: "GET" });
 }
 
+export function listAdminRooms(params = {}) {
+  const searchParams = new URLSearchParams();
+  if (params.hotelId) searchParams.set("hotel_id", params.hotelId);
+  if (params.bedType && params.bedType !== "ALL") searchParams.set("bed_type", params.bedType);
+  if (params.statusRoom && params.statusRoom !== "ALL") searchParams.set("status_room", params.statusRoom);
+  if (params.keyword) searchParams.set("keyword", params.keyword.trim());
+
+  const query = searchParams.toString();
+  const url = query ? `/rooms/list_room?${query}` : "/rooms/list_room";
+  return request(url, { method: "GET" });
+}
+
+export function createAdminRoom(payload) {
+  return request("/rooms/admin/create", {
+    method: "POST",
+    body: JSON.stringify(payload),
+  });
+}
+
+export function updateAdminRoom(roomId, payload) {
+  return request(`/rooms/manager/update?room_id=${roomId}`, {
+    method: "PUT",
+    body: JSON.stringify(payload),
+  });
+}
+
+export function setRoomMaintenance(roomId) {
+  return request(`/rooms/manager/room_maintenance?room_id=${roomId}`, {
+    method: "PATCH",
+  });
+}
+
+export function setRoomAvailable(roomId) {
+  return request(`/rooms/manager/room_available?room_id=${roomId}`, {
+    method: "PATCH",
+  });
+}
+
 export function roomDetail(roomId) {
   return request(`/rooms/room_details?room_id=${roomId}`, { method: "GET" });
 }
