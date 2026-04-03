@@ -35,7 +35,7 @@ const menuItems = [
     label: 'admin.hotels',
     path: '/admin/hotels',
     icon: OfficeBuilding,
-    roles: ['ADMIN', 'MANAGER'],
+    roles: ['ADMIN', 'STAFF'],
   },
   {
     label: 'admin.rooms',
@@ -53,10 +53,10 @@ const menuItems = [
     label: 'admin.guests',
     path: '/admin/guests',
     icon: User,
-    roles: ['ADMIN', 'MANAGER', 'STAFF'],
+    roles: ['ADMIN', 'STAFF'],
   },
   {
-    label: 'admin.users',
+    label: 'admin.staffs',
     path: '/admin/users',
     icon: User,
     roles: ['ADMIN'],

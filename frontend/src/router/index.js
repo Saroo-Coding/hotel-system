@@ -70,7 +70,7 @@ const router = createRouter({
         {
           path: "guests",
           component: () => import("@/views/admin/Guests.vue"),
-          meta: { roles: ["ADMIN", "MANAGER", "STAFF"] },
+          meta: { roles: ["ADMIN", "STAFF"] },
         },
         {
           path: "users",

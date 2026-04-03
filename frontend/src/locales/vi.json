@@ -411,7 +411,14 @@
     "phone": "Điện thoại",
     "dateOfBirth": "Ngày sinh",
     "createdAt": "Ngày tạo",
-    "confirmDelete": "Bạn có chắc chắn muốn xóa {name}?"
+    "status": "Trạng thái",
+    "active": "Hoạt động",
+    "deleted": "Đã xóa",
+    "editGuest": "Cập nhật khách hàng",
+    "updated": "Cập nhật khách hàng thành công",
+    "confirmDelete": "Bạn có chắc chắn muốn xóa {name}?",
+    "confirmRestore": "Khôi phục khách hàng {name}?",
+    "restored": "Khôi phục khách hàng thành công"
   },
   "users": {
     "email": "Email",
@@ -425,7 +432,13 @@
     "unlock": "Mở khóa",
     "locked": "Người dùng đã bị khóa",
     "unlocked": "Người dùng đã được mở khóa",
-    "confirmDelete": "Bạn có chắc chắn muốn xóa {name}?"
+    "confirmDelete": "Bạn có chắc chắn muốn xóa {name}?",
+    "createStaff": "Tạo nhân viên",
+    "editStaff": "Cập nhật nhân viên",
+    "created": "Tạo nhân viên thành công",
+    "updated": "Cập nhật nhân viên thành công",
+    "confirmLock": "Bạn có chắc chắn muốn khóa nhân viên này?",
+    "confirmUnlock": "Bạn có chắc chắn muốn mở khóa nhân viên này?"
   },
   "reports": {
     "totalBookings": "Tổng đặt phòng",
@@ -447,7 +460,8 @@
     "rooms": "Phòng",
     "bookings": "Đặt phòng",
     "guests": "Khách hàng",
-    "users": "Người dùng",
+    "users": "Nhân viên",
+    "staffs": "Nhân viên",
     "reports": "Báo cáo"
   }
 }

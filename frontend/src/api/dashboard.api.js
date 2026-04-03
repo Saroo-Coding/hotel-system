@@ -52,6 +52,33 @@ export function searchGuest(keyword) {
   });
 }
 
+export function listAdminGuests(params = {}) {
+  const searchParams = new URLSearchParams();
+  searchParams.set("page", String(params.page || 1));
+  searchParams.set("limit", String(params.limit || 100));
+  if (params.keyword) searchParams.set("keyword", params.keyword.trim());
+  return request(`/guests/manager/list_guest?${searchParams.toString()}`, { method: "GET" });
+}
+
+export function getAdminGuestDetail(guestId) {
+  return request(`/guests/manager/details?guest_id=${guestId}`, { method: "GET" });
+}
+
+export function updateAdminGuest(guestId, payload) {
+  return request(`/guests/manager/update?guest_id=${guestId}`, {
+    method: "PUT",
+    body: JSON.stringify(payload),
+  });
+}
+
+export function deleteAdminGuest(guestId) {
+  return request(`/guests/manager/delete?guest_id=${guestId}`, { method: "DELETE" });
+}
+
+export function restoreAdminGuest(guestId) {
+  return request(`/guests/admin/restore?guest_id=${guestId}`, { method: "PATCH" });
+}
+
 export function createGuest(payload) {
   return request("/guests/create", {
     method: "POST",
@@ -87,6 +114,40 @@ export function createPayment(payload) {
 
 export function listHotels() {
   return request("/hotels/list_hotels", { method: "GET" });
+}
+
+export function listAdminUsers(params = {}) {
+  const searchParams = new URLSearchParams();
+  searchParams.set("page", String(params.page || 1));
+  searchParams.set("limit", String(params.limit || 100));
+  if (params.role) searchParams.set("role", params.role);
+  if (params.statusUser) searchParams.set("status_user", params.statusUser);
+  if (params.keyword) searchParams.set("keyword", params.keyword.trim());
+  return request(`/users/manager/list?${searchParams.toString()}`, { method: "GET" });
+}
+
+export function getAdminUserDetail(userId) {
+  return request(`/users/manager/details?user_id=${userId}`, { method: "GET" });
+}
+
+export function createAdminUser(payload) {
+  return request("/users/admin/create", {
+    method: "POST",
+    body: JSON.stringify(payload),
+  });
+}
+
+export function updateAdminUser(userId, payload) {
+  return request(`/users/manager/update?user_id=${userId}`, {
+    method: "PUT",
+    body: JSON.stringify(payload),
+  });
+}
+
+export function changeAdminUserStatus(userId, userStatus) {
+  return request(`/users/manager/status?user_id=${userId}&user_status=${userStatus}`, {
+    method: "PATCH",
+  });
 }
 
 export function deactivateHotel(hotelId) {

@@ -75,6 +75,7 @@ class AdminUpdateRoom(BaseModel):
     base_price: Optional[Decimal] = None
     status: Optional[RoomStatus] = None
     description: Optional[str] = None
+    image: Optional[str] = None
 
     @field_validator("hotel_id", mode="before")
     @classmethod

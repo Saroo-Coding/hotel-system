@@ -411,7 +411,14 @@
     "phone": "Phone",
     "dateOfBirth": "Date of Birth",
     "createdAt": "Created At",
-    "confirmDelete": "Are you sure you want to delete {name}?"
+    "status": "Status",
+    "active": "Active",
+    "deleted": "Deleted",
+    "editGuest": "Edit Guest",
+    "updated": "Guest updated successfully",
+    "confirmDelete": "Are you sure you want to delete {name}?",
+    "confirmRestore": "Restore guest {name}?",
+    "restored": "Guest restored successfully"
   },
   "users": {
     "email": "Email",
@@ -425,7 +432,13 @@
     "unlock": "Unlock",
     "locked": "User locked",
     "unlocked": "User unlocked",
-    "confirmDelete": "Are you sure you want to delete {name}?"
+    "confirmDelete": "Are you sure you want to delete {name}?",
+    "createStaff": "Create Staff",
+    "editStaff": "Edit Staff",
+    "created": "Staff created successfully",
+    "updated": "Staff updated successfully",
+    "confirmLock": "Are you sure you want to lock this staff?",
+    "confirmUnlock": "Are you sure you want to unlock this staff?"
   },
   "reports": {
     "totalBookings": "Total Bookings",
@@ -447,7 +460,8 @@
     "rooms": "Rooms",
     "bookings": "Bookings",
     "guests": "Guests",
-    "users": "Users",
+    "users": "Staff",
+    "staffs": "Staff",
     "reports": "Reports"
   }
 }
